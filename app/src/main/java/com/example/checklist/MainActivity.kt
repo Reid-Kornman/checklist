@@ -2,10 +2,17 @@ package com.example.checklist
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
+import android.widget.TextView
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.pm.PackageInfoCompat
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -74,6 +81,21 @@ class MainActivity : AppCompatActivity() {
         loadTasks()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_help -> {
+                showHelpDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun refreshRoutineSpinner() {
         val routines = taskManager.getRoutines()
         val routineDisplayNames = routines.map {
@@ -105,6 +127,34 @@ class MainActivity : AppCompatActivity() {
         val routineId = selectedRoutineId ?: return
         val tasksForRoutine = taskManager.getTasks().filter { it.routineId == routineId }.sortedBy { it.order }
         adapter.updateTasks(tasksForRoutine)
+    }
+
+    private fun showHelpDialog() {
+        val appName = getString(R.string.app_name)
+        @Suppress("DEPRECATION")
+        val packageInfo = packageManager.getPackageInfo(packageName, 0)
+        val versionName = packageInfo.versionName ?: "N/A"
+        val versionCode = PackageInfoCompat.getLongVersionCode(packageInfo).toString()
+        val versionInfo = "$versionName"
+        val message = HtmlCompat.fromHtml(
+            getString(
+                R.string.help_dialog_html,
+                appName,
+                versionInfo,
+                getString(R.string.support_email),
+                getString(R.string.donation_url)
+            ),
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.help_dialog_title)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, null)
+            .create()
+
+        dialog.show()
+        dialog.findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
     }
 }
 

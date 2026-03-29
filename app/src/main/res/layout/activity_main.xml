@@ -24,45 +24,64 @@
             android:layout_weight="1"
             android:spinnerMode="dropdown" />
 
-        <Button
-            android:id="@+id/manageRoutinesButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Manage Routines"
-            android:layout_marginStart="8dp" />
-
-        <Button
-            android:id="@+id/addTaskButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add Task"
-            android:drawableStart="@android:drawable/ic_input_add"
-            android:layout_marginStart="8dp" />
-
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/resetStatusButton"
+        app:layout_constraintBottom_toTopOf="@id/bottomButtonsLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topButtonsLayout"
         tools:listitem="@layout/item_task" />
 
-    <Button
-        android:id="@+id/resetStatusButton"
+    <LinearLayout
+        android:id="@+id/bottomButtonsLayout"
         android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:text="Reset Tasks"
-        android:background="@android:color/holo_blue_light"
-        android:textColor="@android:color/black"
-        android:textAllCaps="false"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_margin="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.5"
-        android:layout_margin="16dp" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/manageRoutinesButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:minHeight="48dp"
+            android:maxHeight="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Manage Routines"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/resetStatusButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:minHeight="48dp"
+            android:maxHeight="48dp"
+            android:layout_weight="1"
+            android:background="@android:color/holo_blue_light"
+            android:text="Reset Tasks"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/addTaskButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:minHeight="48dp"
+            android:maxHeight="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:drawableStart="@android:drawable/ic_input_add"
+            android:text="Add Task"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
