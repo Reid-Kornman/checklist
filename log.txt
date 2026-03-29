@@ -1,0 +1,347 @@
+--------- beginning of kernel
+D/logd    (    0): Skipping 4294952357 entries from slow reader, pid 398, from LogBuffer::kickMe()
+D/logd    (    0): logdr: UID=2000 GID=2000 PID=7365 b tail=0 logMask=99 pid=0 start=0ns timeout=0ns
+--------- beginning of main
+E/android.system.suspend@1.0-service(  230): Error opening kernel wakelock stats for: wakeup36: Permission denied
+E/android.system.suspend@1.0-service(  230): Error opening kernel wakelock stats for: wakeup35: Permission denied
+W/Binder:230_2(  230): type=1400 audit(0.0:236): avc: denied { read } for name="wakeup36" dev="sysfs" ino=19538 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=380.98145, y[0]=785.03906, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1652664, downTime=1652664, deviceId=8, source=0x5002, displayId=0 }
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, id[0]=0, x[0]=380.98145, y[0]=785.03906, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1652709, downTime=1652664, deviceId=8, source=0x5002, displayId=0 }
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=377.97852, y[0]=937.03125, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1653085, downTime=1653085, deviceId=8, source=0x5002, displayId=0 }
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, id[0]=0, x[0]=401.97754, y[0]=678.0469, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1653199, downTime=1653085, deviceId=8, source=0x5002, displayId=0 }
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=401.97754, y[0]=175.03906, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1654600, downTime=1654600, deviceId=8, source=0x5002, displayId=0 }
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, id[0]=0, x[0]=401.97754, y[0]=175.03906, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1654705, downTime=1654600, deviceId=8, source=0x5002, displayId=0 }
+D/TaplEvents(  982): Main / start: startAppShortcutOrInfoActivity
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+D/AudioFlinger(  402): mixer(0xee45b030) throttle end: throttle time(33)
+--------- beginning of system
+I/ActivityTaskManager(  537): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.example.checklist/.MainActivity bnds=[326,96][473,255]} from uid 10155
+D/EventSequenceValidator(  537): inc AccIntentStartedEvents to 2
+I/perfetto(  428): ing_service_impl.cc:758 Configured tracing session 23, #sources:1, duration:5000 ms, #buffers:1, total buffer size:4096 KB, total sessions:1, uid:1071 session name: ""
+I/perfetto(  424): probes_producer.cc:230  Ftrace setup (target_buf=23)
+D/CompatibilityChangeReporter(  537): Compat change id reported: 135634846; UID 10168; state: DISABLED
+D/CompatibilityChangeReporter(  537): Compat change id reported: 143937733; UID 10168; state: ENABLED
+W/ActivityManager(  537): Unable to start service Intent { act=android.service.appprediction.AppPredictionService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiPredictionService } U=0: not found
+W/RemoteAppPredictionService(  537): could not bind to Intent { act=android.service.appprediction.AppPredictionService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiPredictionService } using flags 67108865
+I/perfetto(  424): ftrace_procfs.cc:176    enabled ftrace
+D/Zygote  (  311): Forked child process 7375
+W/perfetto(    0): enabled ftrace
+I/ample.checklis( 7375): Late-enabling -Xcheck:jni
+I/ActivityManager(  537): Start proc 7375:com.example.checklist/u0a168 for pre-top-activity {com.example.checklist/com.example.checklist.MainActivity}
+I/ample.checklis( 7375): Unquickening 12 vdex files!
+W/ample.checklis( 7375): Unexpected CPU variant for X86 using defaults: x86
+I/adbd    (  405): jdwp connection from 7375
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+D/NetworkSecurityConfig( 7375): No Network Security Config specified, using platform default
+D/NetworkSecurityConfig( 7375): No Network Security Config specified, using platform default
+D/libEGL  ( 7375): loaded /vendor/lib/egl/libEGL_emulation.so
+D/libEGL  ( 7375): loaded /vendor/lib/egl/libGLESv1_CM_emulation.so
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+D/libEGL  ( 7375): loaded /vendor/lib/egl/libGLESv2_emulation.so
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+D/AppCompatDelegate( 7375): Checking for metadata for AppLocalesMetadataHolderService : Service not found
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/ample.checklis( 7375): Accessing hidden method Landroid/view/View;->computeFitSystemWindows(Landroid/graphics/Rect;Landroid/graphics/Rect;)Z (greylist, reflection, allowed)
+W/ample.checklis( 7375): Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (greylist, reflection, allowed)
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+D/HostConnection( 7375): HostConnection::get() New Host Connection established 0xe8766570, tid 7398
+D/HostConnection( 7375): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_color_transform GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_2 
+I/hwservicemanager(  186): getTransport: Cannot find entry android.hardware.configstore@1.0::ISurfaceFlingerConfigs/default in either framework or device manifest.
+W/OpenGLRenderer( 7375): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+D/EGL_emulation( 7375): eglCreateContext: 0xe8767a70: maj 2 min 0 rcv 2
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+D/EGL_emulation( 7375): eglMakeCurrent: 0xe8767a70: ver 2 0 (tinfo 0xe8ab59b0) (first time)
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+I/hwservicemanager(  186): getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device manifest.
+I/Gralloc4( 7375): mapper 4.x is not supported
+D/HostConnection( 7375): createUnique: call
+D/HostConnection( 7375): HostConnection::get() New Host Connection established 0xe8768d40, tid 7398
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+D/HostConnection( 7375): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_color_transform GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_2 
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 80 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+D/EventSequenceValidator(  537): dec AccIntentStartedEvents to 1
+D/ArtManagerInternalImpl(  537): /data/misc/iorapd/com.example.checklist/1/com.example.checklist.MainActivity/compiled_traces/compiled_trace.pb doesn't exist
+I/ActivityTaskManager(  537): Displayed com.example.checklist/.MainActivity: +360ms
+W/EmuHWC2 (  331): validate: layer 81 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 81 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 81 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 81 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 81 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+E/Layer   (  390): [Surface(name=Task=18)/@0x729c981 - animation-leash#0] No local sync point found
+E/Layer   (  390): [Surface(name=Task=1)/@0xd8981b7 - animation-leash#0] No local sync point found
+I/PBSessionCacheImpl( 6685): Deleted sessionId[29402715679295036] from persistence.
+W/SearchServiceCore( 6685): Abort, client detached.
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/ActivityTaskManager(  537): START u0 {cmp=com.example.checklist/.EditTaskActivity} from uid 10168
+D/EventSequenceValidator(  537): inc AccIntentStartedEvents to 2
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+D/EventSequenceValidator(  537): dec AccIntentStartedEvents to 1
+I/perfetto(  428): ing_service_impl.cc:758 Configured tracing session 24, #sources:1, duration:5000 ms, #buffers:1, total buffer size:4096 KB, total sessions:2, uid:1071 session name: ""
+I/perfetto(  424): probes_producer.cc:230  Ftrace setup (target_buf=24)
+W/ActivityTaskManager(  537): Tried to set launchTime (0) < mLastActivityLaunchTime (1654771)
+D/AudioFlinger(  402): mixer(0xee45b030) throttle end: throttle time(35)
+D/AndroidRuntime( 7375): Shutting down VM
+--------- beginning of crash
+E/AndroidRuntime( 7375): FATAL EXCEPTION: main
+E/AndroidRuntime( 7375): Process: com.example.checklist, PID: 7375
+E/AndroidRuntime( 7375): java.lang.RuntimeException: Unable to start activity ComponentInfo{com.example.checklist/com.example.checklist.EditTaskActivity}: java.lang.ClassCastException: androidx.appcompat.widget.AppCompatImageButton cannot be cast to android.widget.Button
+E/AndroidRuntime( 7375): 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3449)
+E/AndroidRuntime( 7375): 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3601)
+E/AndroidRuntime( 7375): 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:85)
+E/AndroidRuntime( 7375): 	at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:135)
+E/AndroidRuntime( 7375): 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:95)
+E/AndroidRuntime( 7375): 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2066)
+E/AndroidRuntime( 7375): 	at android.os.Handler.dispatchMessage(Handler.java:106)
+E/AndroidRuntime( 7375): 	at android.os.Looper.loop(Looper.java:223)
+E/AndroidRuntime( 7375): 	at android.app.ActivityThread.main(ActivityThread.java:7656)
+E/AndroidRuntime( 7375): 	at java.lang.reflect.Method.invoke(Native Method)
+E/AndroidRuntime( 7375): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:592)
+E/AndroidRuntime( 7375): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)
+E/AndroidRuntime( 7375): Caused by: java.lang.ClassCastException: androidx.appcompat.widget.AppCompatImageButton cannot be cast to android.widget.Button
+E/AndroidRuntime( 7375): 	at com.example.checklist.EditTaskActivity.onCreate(EditTaskActivity.kt:33)
+E/AndroidRuntime( 7375): 	at android.app.Activity.performCreate(Activity.java:7994)
+E/AndroidRuntime( 7375): 	at android.app.Activity.performCreate(Activity.java:7978)
+E/AndroidRuntime( 7375): 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1309)
+E/AndroidRuntime( 7375): 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3422)
+E/AndroidRuntime( 7375): 	... 11 more
+W/ActivityTaskManager(  537):   Force finishing activity com.example.checklist/.EditTaskActivity
+I/DropBoxManagerService(  537): add tag=data_app_crash isTagEnabled=true flags=0x2
+W/ActivityTaskManager(  537):   Force finishing activity com.example.checklist/.MainActivity
+W/BroadcastQueue(  537): Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.stats.service.DropBoxEntryAddedReceiver
+W/BroadcastQueue(  537): Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+D/EventSequenceValidator(  537): dec AccIntentStartedEvents to 0
+W/iorapd  (  444): Rejecting transition from kIntentFailed to kActivityLaunchCancelled
+D/HostConnection(  537): HostConnection::get() New Host Connection established 0xe877a8c0, tid 5961
+D/HostConnection(  537): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_color_transform GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_2 
+W/OpenGLRenderer(  537): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+D/EGL_emulation(  537): eglCreateContext: 0xe877bf10: maj 2 min 0 rcv 2
+D/EGL_emulation(  537): eglMakeCurrent: 0xe877bf10: ver 2 0 (tinfo 0xaa7b85b0) (first time)
+W/ActivityTaskManager(  537): Activity top resumed state loss timeout for ActivityRecord{147453f u0 com.example.checklist/.EditTaskActivity t18 f}}
+W/ActivityTaskManager(  537): Activity pause timeout for ActivityRecord{147453f u0 com.example.checklist/.EditTaskActivity t18 f}}
+W/ActivityManager(  537): Unable to start service Intent { act=android.service.appprediction.AppPredictionService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiPredictionService } U=0: not found
+W/RemoteAppPredictionService(  537): could not bind to Intent { act=android.service.appprediction.AppPredictionService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiPredictionService } using flags 67108865
+E/sb.v.u.LiteSuggestSourc( 6685): On-device lite suggest model loading error.
+W/ThreadPoolDumper( 6685): Queue length for executor EventBus is now 11. Perhaps some tasks are too long, or the pool is too small.
+E/MDD     ( 6685): DownloadProgressMonitor: Can't find file group for uri: android://com.google.android.googlequicksearchbox/files/sharedminusonemodule/shared/SharedMinusOneData.pb.tmp
+I/BgTaskExecutorImpl( 6685): Starting EXCLUSIVE background task TNG_MINUS_ONE_SYNC.
+I/TngMinusOneSync( 6685): Syncing TNG:-1
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+W/WindowManager(  537):   Force finishing activity com.example.checklist/.EditTaskActivity
+W/WindowManager(  537):   Force finishing activity com.example.checklist/.MainActivity
+D/OpenGLRenderer(  537): endAllActiveAnimators on 0xe2384890 (RippleDrawable) with handle 0xb32c32d0
+I/ActivityManager(  537): Killing 7375:com.example.checklist/u0a168 (adj 900): crash
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/Zygote  (  311): Process 7375 exited due to signal 9 (Killed)
+W/ActivityManager(  537): setHasOverlayUi called on unknown pid: 7375
+I/binder  (    0): undelivered TRANSACTION_COMPLETE
+I/binder  (    0): undelivered transaction 575213, process died.
+I/libprocessgroup(  537): Successfully killed process cgroup uid 10168 pid 7375 in 44ms
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/perfetto(  424): probes_producer.cc:329  Producer stop (id=23)
+I/perfetto(  428): ng_service_impl.cc:1948 Tracing session 23 ended, total sessions:1
+I/iorapd  (  444): Perfetto TraceBuffer saved to file: /data/misc/iorapd/com.example.checklist/1/com.example.checklist.MainActivity/raw_traces/1774752884342471091.perfetto_trace.pb
+I/PeriodicStatsRunner( 1442): PeriodicStatsRunner.call():180 call()
+I/PeriodicStatsRunner( 1442): PeriodicStatsRunner.call():184 No submit PeriodicStats since input started.
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=197.97363, y[0]=1009.02344, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1660271, downTime=1660271, deviceId=8, source=0x5002, displayId=0 }
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, id[0]=0, x[0]=197.97363, y[0]=1009.02344, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1660393, downTime=1660271, deviceId=8, source=0x5002, displayId=0 }
+I/perfetto(  424): probes_producer.cc:329  Producer stop (id=24)
+I/perfetto(  424): ftrace_procfs.cc:183    disabled ftrace
+I/perfetto(  428): ng_service_impl.cc:1948 Tracing session 24 ended, total sessions:0
+W/perfetto(    0): disabled ftrace
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=394.9707, y[0]=174.0625, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1661671, downTime=1661671, deviceId=8, source=0x5002, displayId=0 }
+D/TaplEvents(  982): Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, id[0]=0, x[0]=394.9707, y[0]=174.0625, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x1, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=1661783, downTime=1661671, deviceId=8, source=0x5002, displayId=0 }
+D/TaplEvents(  982): Main / start: startAppShortcutOrInfoActivity
+D/EventSequenceValidator(  537): Transition from INIT to INTENT_STARTED
+I/ActivityTaskManager(  537): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.example.checklist/.MainActivity bnds=[326,96][473,255]} from uid 10155
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/perfetto(  428): ing_service_impl.cc:758 Configured tracing session 25, #sources:1, duration:5000 ms, #buffers:1, total buffer size:4096 KB, total sessions:1, uid:1071 session name: ""
+D/CompatibilityChangeReporter(  537): Compat change id reported: 135634846; UID 10168; state: DISABLED
+D/CompatibilityChangeReporter(  537): Compat change id reported: 143937733; UID 10168; state: ENABLED
+W/ActivityManager(  537): Unable to start service Intent { act=android.service.appprediction.AppPredictionService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiPredictionService } U=0: not found
+W/RemoteAppPredictionService(  537): could not bind to Intent { act=android.service.appprediction.AppPredictionService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiPredictionService } using flags 67108865
+D/EventSequenceValidator(  537): Transition from INTENT_STARTED to ACTIVITY_LAUNCHED
+D/Zygote  (  311): Forked child process 7423
+I/ActivityManager(  537): Start proc 7423:com.example.checklist/u0a168 for pre-top-activity {com.example.checklist/com.example.checklist.MainActivity}
+I/ample.checklis( 7423): Late-enabling -Xcheck:jni
+I/ample.checklis( 7423): Unquickening 12 vdex files!
+W/ample.checklis( 7423): Unexpected CPU variant for X86 using defaults: x86
+I/adbd    (  405): jdwp connection from 7423
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+D/NetworkSecurityConfig( 7423): No Network Security Config specified, using platform default
+D/NetworkSecurityConfig( 7423): No Network Security Config specified, using platform default
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+D/libEGL  ( 7423): loaded /vendor/lib/egl/libEGL_emulation.so
+I/perfetto(  424): probes_producer.cc:230  Ftrace setup (target_buf=25)
+D/libEGL  ( 7423): loaded /vendor/lib/egl/libGLESv1_CM_emulation.so
+D/libEGL  ( 7423): loaded /vendor/lib/egl/libGLESv2_emulation.so
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+D/AppCompatDelegate( 7423): Checking for metadata for AppLocalesMetadataHolderService : Service not found
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+I/perfetto(  424): ftrace_procfs.cc:176    enabled ftrace
+W/perfetto(    0): enabled ftrace
+W/ample.checklis( 7423): Accessing hidden method Landroid/view/View;->computeFitSystemWindows(Landroid/graphics/Rect;Landroid/graphics/Rect;)Z (greylist, reflection, allowed)
+W/ample.checklis( 7423): Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (greylist, reflection, allowed)
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+D/HostConnection( 7423): HostConnection::get() New Host Connection established 0xe8764d60, tid 7446
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+D/HostConnection( 7423): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_color_transform GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_2 
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+I/hwservicemanager(  186): getTransport: Cannot find entry android.hardware.configstore@1.0::ISurfaceFlingerConfigs/default in either framework or device manifest.
+W/OpenGLRenderer( 7423): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+D/EGL_emulation( 7423): eglCreateContext: 0xe8765bd0: maj 2 min 0 rcv 2
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+D/EGL_emulation( 7423): eglMakeCurrent: 0xe8765bd0: ver 2 0 (tinfo 0xe8ab5350) (first time)
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+I/hwservicemanager(  186): getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device manifest.
+I/Gralloc4( 7423): mapper 4.x is not supported
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+D/HostConnection( 7423): createUnique: call
+D/HostConnection( 7423): HostConnection::get() New Host Connection established 0xe8765cb0, tid 7446
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+D/HostConnection( 7423): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_color_transform GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_2 
+W/EmuHWC2 (  331): validate: layer 86 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+D/EventSequenceValidator(  537): Transition from ACTIVITY_LAUNCHED to ACTIVITY_FINISHED
+D/ArtManagerInternalImpl(  537): /data/misc/iorapd/com.example.checklist/1/com.example.checklist.MainActivity/compiled_traces/compiled_trace.pb doesn't exist
+W/EmuHWC2 (  331): validate: layer 87 CompositionType 1, fallback
+I/ActivityTaskManager(  537): Displayed com.example.checklist/.MainActivity: +339ms
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 87 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 87 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 87 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+W/EmuHWC2 (  331): validate: layer 87 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c1590
+W/EmuHWC2 (  331): validate: layer 87 CompositionType 1, fallback
+W/EmuHWC2 (  331): No layers, exit, buffer 0xe69c0090
+E/Layer   (  390): [Surface(name=Task=19)/@0x3de6b51 - animation-leash#0] No local sync point found
+E/Layer   (  390): [Surface(name=Task=1)/@0xd8981b7 - animation-leash#0] No local sync point found
+I/PBSessionCacheImpl( 6685): Deleted sessionId[29402715679295039] from persistence.
+W/SearchServiceCore( 6685): Abort, client detached.
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+D/AudioFlinger(  402): mixer(0xee45b030) throttle end: throttle time(34)
+I/PeriodicStatsRunner( 1442): PeriodicStatsRunner.call():180 call()
+I/PeriodicStatsRunner( 1442): PeriodicStatsRunner.call():184 No submit PeriodicStats since input started.
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/ActivityTaskManager(  537): START u0 {cmp=com.example.checklist/.EditTaskActivity (has extras)} from uid 10168
+D/EventSequenceValidator(  537): Transition from ACTIVITY_FINISHED to INTENT_STARTED
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/perfetto(  428): ing_service_impl.cc:758 Configured tracing session 26, #sources:1, duration:5000 ms, #buffers:1, total buffer size:4096 KB, total sessions:2, uid:1071 session name: ""
+I/perfetto(  424): probes_producer.cc:230  Ftrace setup (target_buf=26)
+D/EventSequenceValidator(  537): Transition from INTENT_STARTED to INTENT_FAILED
+W/ActivityTaskManager(  537): Tried to set launchTime (0) < mLastActivityLaunchTime (1661830)
+D/AndroidRuntime( 7423): Shutting down VM
+E/AndroidRuntime( 7423): FATAL EXCEPTION: main
+E/AndroidRuntime( 7423): Process: com.example.checklist, PID: 7423
+E/AndroidRuntime( 7423): java.lang.RuntimeException: Unable to start activity ComponentInfo{com.example.checklist/com.example.checklist.EditTaskActivity}: java.lang.ClassCastException: androidx.appcompat.widget.AppCompatImageButton cannot be cast to android.widget.Button
+E/AndroidRuntime( 7423): 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3449)
+E/AndroidRuntime( 7423): 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3601)
+E/AndroidRuntime( 7423): 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:85)
+E/AndroidRuntime( 7423): 	at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:135)
+E/AndroidRuntime( 7423): 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:95)
+E/AndroidRuntime( 7423): 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2066)
+E/AndroidRuntime( 7423): 	at android.os.Handler.dispatchMessage(Handler.java:106)
+E/AndroidRuntime( 7423): 	at android.os.Looper.loop(Looper.java:223)
+E/AndroidRuntime( 7423): 	at android.app.ActivityThread.main(ActivityThread.java:7656)
+E/AndroidRuntime( 7423): 	at java.lang.reflect.Method.invoke(Native Method)
+E/AndroidRuntime( 7423): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:592)
+E/AndroidRuntime( 7423): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)
+E/AndroidRuntime( 7423): Caused by: java.lang.ClassCastException: androidx.appcompat.widget.AppCompatImageButton cannot be cast to android.widget.Button
+E/AndroidRuntime( 7423): 	at com.example.checklist.EditTaskActivity.onCreate(EditTaskActivity.kt:33)
+E/AndroidRuntime( 7423): 	at android.app.Activity.performCreate(Activity.java:7994)
+E/AndroidRuntime( 7423): 	at android.app.Activity.performCreate(Activity.java:7978)
+E/AndroidRuntime( 7423): 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1309)
+E/AndroidRuntime( 7423): 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3422)
+E/AndroidRuntime( 7423): 	... 11 more
+I/DropBoxManagerService(  537): add tag=data_app_crash isTagEnabled=true flags=0x2
+W/ActivityTaskManager(  537):   Force finishing activity com.example.checklist/.EditTaskActivity
+W/ActivityTaskManager(  537):   Force finishing activity com.example.checklist/.MainActivity
+W/BroadcastQueue(  537): Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.stats.service.DropBoxEntryAddedReceiver
+W/BroadcastQueue(  537): Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+D/EventSequenceValidator(  537): inc AccIntentStartedEvents to 1
+W/iorapd  (  444): Rejecting transition from kIntentFailed to kActivityLaunchCancelled
+I/Process ( 7423): Sending signal. PID: 7423 SIG: 9
+I/Zygote  (  311): Process 7423 exited due to signal 9 (Killed)
+I/ActivityManager(  537): Process com.example.checklist (pid 7423) has died: prcp TOP 
+I/libprocessgroup(  537): Successfully killed process cgroup uid 10168 pid 7423 in 0ms
+I/WindowManager(  537): WIN DEATH: Window{4817f45 u0 com.example.checklist/com.example.checklist.MainActivity}
+W/InputDispatcher(  537): Attempted to unregister already unregistered input channel '4817f45 com.example.checklist/com.example.checklist.MainActivity (server)'
+W/ActivityManager(  537): setHasOverlayUi called on unknown pid: 7423
+W/ActivityManager(  537): Unable to start service Intent { act=android.service.appprediction.AppPredictionService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiPredictionService } U=0: not found
+W/RemoteAppPredictionService(  537): could not bind to Intent { act=android.service.appprediction.AppPredictionService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiPredictionService } using flags 67108865
+E/sb.v.u.LiteSuggestSourc( 6685): On-device lite suggest model loading error.
+W/ThreadPoolDumper( 6685): Queue length for executor EventBus is now 11. Perhaps some tasks are too long, or the pool is too small.
+I/BgTaskExecutorImpl( 6685): Starting EXCLUSIVE background task TNG_MINUS_ONE_SYNC.
+E/MDD     ( 6685): DownloadProgressMonitor: Can't find file group for uri: android://com.google.android.googlequicksearchbox/files/sharedminusonemodule/shared/SharedMinusOneData.pb.tmp
+D/HostConnection(  537): HostConnection::get() New Host Connection established 0xe8765f50, tid 5961
+D/HostConnection(  537): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_color_transform GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_2 
+W/OpenGLRenderer(  537): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+I/TngMinusOneSync( 6685): Syncing TNG:-1
+D/EGL_emulation(  537): eglCreateContext: 0xab884530: maj 2 min 0 rcv 2
+D/EGL_emulation(  537): eglMakeCurrent: 0xab884530: ver 2 0 (tinfo 0xaa7b85b0) (first time)
+W/ActivityTaskManager(  537): Activity top resumed state loss timeout for ActivityRecord{cc40425 u0 com.example.checklist/.EditTaskActivity t-1 f}}
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/perfetto(  424): probes_producer.cc:329  Producer stop (id=25)
+I/perfetto(  428): ng_service_impl.cc:1948 Tracing session 25 ended, total sessions:1
+I/iorapd  (  444): Perfetto TraceBuffer saved to file: /data/misc/iorapd/com.example.checklist/1/com.example.checklist.MainActivity/raw_traces/1774752891413485098.perfetto_trace.pb
+I/PeriodicStatsRunner( 1442): PeriodicStatsRunner.call():180 call()
+I/PeriodicStatsRunner( 1442): PeriodicStatsRunner.call():184 No submit PeriodicStats since input started.
+I/system_server(  537): oneway function results will be dropped but finished with status OK and parcel size 4
+I/perfetto(  424): probes_producer.cc:329  Producer stop (id=26)
+I/perfetto(  428): ng_service_impl.cc:1948 Tracing session 26 ended, total sessions:0
+I/perfetto(  424): ftrace_procfs.cc:183    disabled ftrace
+W/perfetto(    0): disabled ftrace
+I/PeriodicStatsRunner( 1442): PeriodicStatsRunner.call():180 call()
+I/PeriodicStatsRunner( 1442): PeriodicStatsRunner.call():184 No submit PeriodicStats since input started.
+D/KeyguardClockSwitch(  782): Updating clock: 1055
