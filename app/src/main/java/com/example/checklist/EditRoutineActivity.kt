@@ -4,6 +4,7 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
@@ -19,6 +20,11 @@ class EditRoutineActivity : AppCompatActivity() {
     private var startTime = "09:00"
     private var endTime = "18:00"
 
+    private fun setModalTitle(title: String) {
+        this.title = title
+        supportActionBar?.title = title
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_routine)
@@ -30,6 +36,7 @@ class EditRoutineActivity : AppCompatActivity() {
         endTimeButton = findViewById(R.id.endTimeButton)
         saveButton = findViewById(R.id.saveRoutineButton)
         val cancelButton = findViewById<Button>(R.id.cancelRoutineButton)
+        val deleteButton = findViewById<ImageButton>(R.id.deleteRoutineButton)
 
         routineId = intent.getStringExtra("routine_id")
 
@@ -40,10 +47,11 @@ class EditRoutineActivity : AppCompatActivity() {
                 startTime = routine.startTime
                 endTime = routine.endTime
                 updateTimeButtons()
-                supportActionBar?.title = "Edit Routine"
+                deleteButton.visibility = android.view.View.VISIBLE
             }
+            setModalTitle("Edit Routine")
         } else {
-            supportActionBar?.title = "Create Routine"
+            setModalTitle("Add Routine")
             updateTimeButtons()
         }
 
@@ -65,6 +73,13 @@ class EditRoutineActivity : AppCompatActivity() {
         }
 
         cancelButton.setOnClickListener {
+            finish()
+        }
+
+        deleteButton.setOnClickListener {
+            val id = routineId ?: return@setOnClickListener
+            taskManager.deleteRoutine(id)
+            Toast.makeText(this, "Routine deleted", Toast.LENGTH_SHORT).show()
             finish()
         }
     }

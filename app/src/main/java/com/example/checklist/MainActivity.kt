@@ -8,8 +8,6 @@ import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,8 +76,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun refreshRoutineSpinner() {
         val routines = taskManager.getRoutines()
-        val routineNames = routines.map { it.name }
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, routineNames)
+        val routineDisplayNames = routines.map {
+            "${it.name} (${toAmPm(it.startTime)} - ${toAmPm(it.endTime)})"
+        }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, routineDisplayNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         routineSpinner.adapter = adapter
 
@@ -138,6 +138,13 @@ class TaskAdapter(
         notifyDataSetChanged()
     }
 
+    fun updateTaskAt(position: Int, task: Task) {
+        if (position in tasks.indices) {
+            tasks[position] = task
+            notifyItemChanged(position)
+        }
+    }
+
     override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): TaskViewHolder {
         val view = android.view.LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
         return TaskViewHolder(view, taskManager, onEditClick)
@@ -175,10 +182,23 @@ class TaskAdapter(
             } else {
                 taskName.paintFlags = taskName.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
             }
+            // Prevent previous recycled listeners from firing when setting checked state
+            completeToggle.setOnCheckedChangeListener(null)
             completeToggle.isChecked = task.completed
             completeToggle.setOnCheckedChangeListener { _, isChecked ->
                 val updatedTask = task.copy(completed = isChecked)
                 taskManager.saveTask(updatedTask)
+
+                // Keep the adapter's cached list in sync until next load
+                (bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION })?.let { listPosition ->
+                    (itemView.parent as? RecyclerView)?.adapter?.let {
+                        if (it is TaskAdapter) {
+                            it.updateTaskAt(listPosition, updatedTask)
+                        }
+                    }
+                }
+
+                // Keep UI state aligned with stored completed state
                 if (isChecked) {
                     taskName.paintFlags = taskName.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
                 } else {

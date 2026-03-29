@@ -31,18 +31,39 @@
             android:text="End Time"
             android:layout_marginBottom="24dp" />
 
-        <Button
-            android:id="@+id/saveRoutineButton"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save"
-            android:layout_marginBottom="8dp" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="8dp">
 
-        <Button
-            android:id="@+id/cancelRoutineButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cancel" />
+            <ImageButton
+                android:id="@+id/deleteRoutineButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_delete"
+                android:contentDescription="Delete routine"
+                android:background="?attr/selectableItemBackground"
+                android:tint="@android:color/holo_red_dark"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/saveRoutineButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="0dp"
+                android:layout_marginEnd="8dp"
+                android:text="Save" />
+
+            <Button
+                android:id="@+id/cancelRoutineButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="0dp"
+                android:text="Cancel" />
+        </LinearLayout>
 
     </LinearLayout>
 

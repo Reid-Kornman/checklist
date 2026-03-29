@@ -16,6 +16,11 @@ class EditTaskActivity : AppCompatActivity() {
     private var taskId: String? = null
     private var selectedRoutineId: String? = null
 
+    private fun setModalTitle(title: String) {
+        this.title = title
+        supportActionBar?.title = title
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_task)
@@ -38,8 +43,8 @@ class EditTaskActivity : AppCompatActivity() {
                 nameEditText.setText(task.name)
                 selectedRoutineId = task.routineId
                 orderEditText.setText(task.order.toString())
-                supportActionBar?.title = "Edit Task"
             }
+            setModalTitle("Edit Task")
             deleteButton.visibility = android.view.View.VISIBLE
             deleteButton.setOnClickListener {
                 taskManager.deleteTask(taskId!!)
@@ -48,8 +53,13 @@ class EditTaskActivity : AppCompatActivity() {
             }
         } else {
             // Add mode
-            supportActionBar?.title = "Add Task"
+            setModalTitle("Add Task")
             deleteButton.visibility = android.view.View.GONE
+
+            selectedRoutineId?.let { rid ->
+                val maxOrder = taskManager.getTasks().filter { it.routineId == rid }.maxOfOrNull { it.order } ?: 0
+                orderEditText.setText((maxOrder + 1).toString())
+            }
         }
 
         saveButton.setOnClickListener {

@@ -44,17 +44,17 @@
 
             <Button
                 android:id="@+id/saveButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:minWidth="0dp"
                 android:text="Save"
                 android:layout_marginEnd="8dp" />
 
             <Button
                 android:id="@+id/cancelButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:minWidth="0dp"
                 android:text="Cancel" />
 
         </LinearLayout>

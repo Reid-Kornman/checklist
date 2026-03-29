@@ -33,10 +33,6 @@ class ManageRoutinesActivity : AppCompatActivity() {
                 val intent = Intent(this, EditRoutineActivity::class.java)
                 intent.putExtra("routine_id", routineId)
                 startActivity(intent)
-            },
-            onDelete = { routineId ->
-                taskManager.deleteRoutine(routineId)
-                refreshList()
             }
         )
         recyclerView.adapter = adapter

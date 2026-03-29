@@ -29,6 +29,9 @@
         android:id="@+id/completeToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="12dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5" />
 
 </LinearLayout>

@@ -23,7 +23,7 @@
         <activity
             android:name=".EditTaskActivity"
             android:exported="false"
-            android:theme="@style/Theme.Checklist" />
+            android:theme="@style/Theme.Checklist.TaskModal" />
         <activity
             android:name=".ManageRoutinesActivity"
             android:exported="false"
@@ -31,7 +31,7 @@
         <activity
             android:name=".EditRoutineActivity"
             android:exported="false"
-            android:theme="@style/Theme.Checklist" />
+            android:theme="@style/Theme.Checklist.TaskModal" />
     </application>
 
 </manifest>
