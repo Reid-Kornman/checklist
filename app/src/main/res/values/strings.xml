@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Checklist</string>
     <string name="help_icon_description">Help</string>
+    <string name="dark_mode_switch_to_dark">Switch to dark mode</string>
+    <string name="dark_mode_switch_to_light">Switch to light mode</string>
     <string name="help_dialog_title">About</string>
     <string name="support_email">reid.kornman@gmail.com</string>
     <string name="donation_url">https://paypal.me/ReidKornman</string>

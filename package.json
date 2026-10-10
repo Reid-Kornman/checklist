@@ -1,0 +1,7 @@
+{
+  "name": "checklist",
+  "private": true,
+  "scripts": {
+    "deploy:emulator": "if exist app\\build rmdir /s /q app\\build && gradlew.bat installDebug && adb shell am start -n com.example.checklist/.MainActivity"
+  }
+}

@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.text.HtmlCompat
@@ -83,11 +84,27 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
+        val darkModeEnabled = getDarkModePreference()
+        menu.findItem(R.id.action_dark_mode).apply {
+            setIcon(if (darkModeEnabled) R.drawable.ic_light_mode else R.drawable.ic_dark_mode)
+            setTitle(if (darkModeEnabled) R.string.dark_mode_switch_to_light else R.string.dark_mode_switch_to_dark)
+        }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_dark_mode -> {
+                val darkModeEnabled = !getDarkModePreference()
+                getSharedPreferences(ChecklistApplication.PREFERENCES_NAME, MODE_PRIVATE)
+                    .edit()
+                    .putBoolean(ChecklistApplication.DARK_MODE_KEY, darkModeEnabled)
+                    .apply()
+                AppCompatDelegate.setDefaultNightMode(
+                    if (darkModeEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                )
+                true
+            }
             R.id.action_help -> {
                 showHelpDialog()
                 true
@@ -95,6 +112,11 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    private fun getDarkModePreference(): Boolean = getSharedPreferences(
+        ChecklistApplication.PREFERENCES_NAME,
+        MODE_PRIVATE
+    ).getBoolean(ChecklistApplication.DARK_MODE_KEY, false)
 
     private fun refreshRoutineSpinner() {
         val routines = taskManager.getRoutines()
@@ -220,11 +242,9 @@ class TaskAdapter(
             taskName.text = task.name
             
             // Set alternating background colors
-            val backgroundColor = if (position % 2 == 0) {
-                android.graphics.Color.parseColor("#F5F5F5")
-            } else {
-                android.graphics.Color.parseColor("#FFFFFF")
-            }
+            val backgroundColor = itemView.context.getColor(
+                if (position % 2 == 0) R.color.task_row_even else R.color.task_row_odd
+            )
             rootLayout.setBackgroundColor(backgroundColor)
             
             if (task.completed) {

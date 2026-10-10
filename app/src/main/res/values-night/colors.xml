@@ -1,0 +1,4 @@
+<resources>
+    <color name="task_row_even">#303030</color>
+    <color name="task_row_odd">#242424</color>
+</resources>

@@ -65,10 +65,8 @@
             android:minHeight="48dp"
             android:maxHeight="48dp"
             android:layout_weight="1"
-            android:background="@android:color/holo_blue_light"
             android:text="Reset Tasks"
-            android:textAllCaps="false"
-            android:textColor="@android:color/black" />
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/addTaskButton"
