@@ -17,6 +17,17 @@
         android:background="?attr/selectableItemBackground"
         android:layout_marginEnd="16dp" />
 
+    <ImageButton
+        android:id="@+id/dragHandle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_drag_handle"
+        android:contentDescription="@string/reorder_task"
+        android:scaleType="centerInside"
+        android:background="?attr/selectableItemBackground"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/taskName"
         android:layout_width="0dp"
@@ -24,6 +35,52 @@
         android:layout_weight="1"
         android:textSize="20sp"
         android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/taskNameEdit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="@string/edit_task_name"
+        android:inputType="textCapSentences"
+        android:singleLine="true"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/taskEditActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/saveTaskButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_check"
+            android:contentDescription="@string/save_task"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#2E7D32" />
+
+        <ImageButton
+            android:id="@+id/deleteTaskButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_delete"
+            android:contentDescription="@string/delete_task"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#D32F2F" />
+
+        <ImageButton
+            android:id="@+id/cancelTaskEditButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="@string/cancel_task_edit"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#1976D2" />
+    </LinearLayout>
 
     <Switch
         android:id="@+id/completeToggle"

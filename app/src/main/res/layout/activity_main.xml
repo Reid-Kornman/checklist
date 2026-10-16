@@ -24,6 +24,15 @@
             android:layout_weight="1"
             android:spinnerMode="dropdown" />
 
+        <ImageButton
+            android:id="@+id/addRoutineButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_input_add"
+            android:contentDescription="@string/add_routine"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="?attr/colorControlNormal" />
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -48,14 +57,16 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/manageRoutinesButton"
+            android:id="@+id/reorderTasksButton"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:minHeight="48dp"
             android:maxHeight="48dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:text="Manage Routines"
+            android:text="@string/reorder_tasks"
+            android:drawableStart="@android:drawable/ic_menu_sort_by_size"
+            android:drawablePadding="6dp"
             android:textAllCaps="false" />
 
         <Button

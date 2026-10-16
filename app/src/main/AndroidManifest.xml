@@ -26,10 +26,6 @@
             android:exported="false"
             android:theme="@style/Theme.Checklist.TaskModal" />
         <activity
-            android:name=".ManageRoutinesActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Checklist" />
-        <activity
             android:name=".EditRoutineActivity"
             android:exported="false"
             android:theme="@style/Theme.Checklist.TaskModal" />

@@ -2,11 +2,14 @@ package com.example.checklist
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
@@ -14,6 +17,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.text.HtmlCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -37,25 +41,87 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = TaskAdapter(taskManager) { taskId ->
-            val intent = Intent(this, EditTaskActivity::class.java)
-            intent.putExtra("task_id", taskId)
-            startActivity(intent)
-        }
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            0
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                if (!adapter.isReorderMode) return false
+                return adapter.moveTask(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
+
+            override fun isLongPressDragEnabled() = false
+        })
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+        adapter = TaskAdapter(
+            taskManager,
+            onEditClick = { taskId ->
+                adapter.beginEditing(taskId)
+            },
+            onSaveClick = { taskId, name ->
+                if (!adapter.saveTaskName(taskId, name)) {
+                    Toast.makeText(this, R.string.task_name_required, Toast.LENGTH_SHORT).show()
+                }
+            },
+            onDeleteClick = { task ->
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.delete_task_title)
+                    .setMessage(getString(R.string.delete_task_confirmation, task.name))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(R.string.delete_task) { _, _ -> adapter.deleteTask(task.id) }
+                    .show()
+            },
+            onStartDrag = { viewHolder -> itemTouchHelper.startDrag(viewHolder) }
+        )
         recyclerView.adapter = adapter
 
-        val manageRoutinesButton = findViewById<Button>(R.id.manageRoutinesButton)
-        manageRoutinesButton.setOnClickListener {
-            val intent = Intent(this, ManageRoutinesActivity::class.java)
+        val addRoutineButton = findViewById<android.widget.ImageButton>(R.id.addRoutineButton)
+        addRoutineButton.setOnClickListener {
+            val intent = Intent(this, EditRoutineActivity::class.java)
             startActivity(intent)
+        }
+
+        val reorderTasksButton = findViewById<Button>(R.id.reorderTasksButton)
+        reorderTasksButton.setOnClickListener {
+            if (adapter.isEditing) return@setOnClickListener
+            if (adapter.isReorderMode) {
+                saveTaskOrder()
+                adapter.setReorderMode(false)
+                updateReorderButton(reorderTasksButton, false)
+            } else {
+                adapter.setReorderMode(true)
+                updateReorderButton(reorderTasksButton, true)
+            }
         }
 
         val addTaskButton = findViewById<Button>(R.id.addTaskButton)
         addTaskButton.setOnClickListener {
-            selectedRoutineId?.let { currentRoutineId ->
-                val intent = Intent(this, EditTaskActivity::class.java)
-                intent.putExtra("routine_id", currentRoutineId)
-                startActivity(intent)
+            if (adapter.isEditing || adapter.isReorderMode) {
+                Toast.makeText(this, R.string.finish_task_edit_first, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val currentRoutineId = selectedRoutineId ?: return@setOnClickListener
+            val routine = taskManager.getRoutines().find { it.id == currentRoutineId } ?: return@setOnClickListener
+            val tasksForRoutine = taskManager.getTasks().filter { it.routineId == currentRoutineId }
+            val nextOrder = (tasksForRoutine.maxOfOrNull { it.order } ?: -1) + 1
+            val task = Task(
+                id = java.util.UUID.randomUUID().toString(),
+                name = "",
+                order = nextOrder,
+                startTime = routine.startTime,
+                endTime = routine.endTime,
+                routineId = currentRoutineId
+            )
+
+            if (adapter.addTask(task)) {
+                recyclerView.scrollToPosition(adapter.itemCount - 1)
             }
         }
 
@@ -151,6 +217,21 @@ class MainActivity : AppCompatActivity() {
         adapter.updateTasks(tasksForRoutine)
     }
 
+    private fun saveTaskOrder() {
+        val reorderedTasks = adapter.tasksInCurrentOrder().mapIndexed { index, task ->
+            task.copy(order = index)
+        }
+        val updatedTasksById = reorderedTasks.associateBy { it.id }
+        val allTasks = taskManager.getTasks().map { task -> updatedTasksById[task.id] ?: task }
+        taskManager.saveTasks(allTasks)
+    }
+
+    private fun updateReorderButton(button: Button, isSaving: Boolean) {
+        button.text = getString(if (isSaving) R.string.save_order else R.string.reorder_tasks)
+        val icon = if (isSaving) android.R.drawable.ic_menu_save else android.R.drawable.ic_menu_sort_by_size
+        button.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
+    }
+
     private fun showHelpDialog() {
         val appName = getString(R.string.app_name)
         @Suppress("DEPRECATION")
@@ -199,12 +280,27 @@ data class Routine(
 
 class TaskAdapter(
     private val taskManager: TaskManager,
-    private val onEditClick: (taskId: String) -> Unit
+    private val onEditClick: (taskId: String) -> Unit,
+    private val onSaveClick: (taskId: String, name: String) -> Unit,
+    private val onDeleteClick: (Task) -> Unit,
+    private val onStartDrag: (RecyclerView.ViewHolder) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private val tasks = mutableListOf<Task>()
+    private var editingTaskId: String? = null
+    private var editingTaskDraft = ""
+    private var newTaskId: String? = null
+    var isReorderMode = false
+        private set
+    val isEditing: Boolean
+        get() = editingTaskId != null
 
     fun updateTasks(newTasks: List<Task>) {
+        if (editingTaskId != null && newTasks.none { it.id == editingTaskId }) {
+            editingTaskId = null
+            editingTaskDraft = ""
+        }
+        if (newTaskId != null && newTasks.none { it.id == newTaskId }) newTaskId = null
         tasks.clear()
         tasks.addAll(newTasks)
         notifyDataSetChanged()
@@ -217,29 +313,167 @@ class TaskAdapter(
         }
     }
 
+    fun setReorderMode(enabled: Boolean) {
+        isReorderMode = enabled
+        notifyDataSetChanged()
+    }
+
+    fun beginEditing(taskId: String) {
+        if (isReorderMode || isEditing) return
+        val task = tasks.find { it.id == taskId } ?: return
+        editingTaskId = taskId
+        editingTaskDraft = task.name
+        notifyItemChanged(tasks.indexOf(task))
+    }
+
+    fun addTask(task: Task): Boolean {
+        if (isReorderMode || isEditing) return false
+        val position = tasks.size
+        tasks.add(task)
+        editingTaskId = task.id
+        editingTaskDraft = ""
+        newTaskId = task.id
+        notifyItemInserted(position)
+        return true
+    }
+
+    fun updateEditingDraft(taskId: String, draft: String) {
+        if (editingTaskId == taskId) editingTaskDraft = draft
+    }
+
+    fun saveTaskName(taskId: String, name: String): Boolean {
+        val position = tasks.indexOfFirst { it.id == taskId }
+        val updatedName = name.trim()
+        if (position < 0 || editingTaskId != taskId || updatedName.isEmpty()) return false
+
+        val updatedTask = tasks[position].copy(name = updatedName)
+        taskManager.saveTask(updatedTask)
+        tasks[position] = updatedTask
+        editingTaskId = null
+        editingTaskDraft = ""
+        newTaskId = null
+        notifyItemChanged(position)
+        return true
+    }
+
+    fun cancelEditing(taskId: String) {
+        if (editingTaskId != taskId) return
+        val position = tasks.indexOfFirst { it.id == taskId }
+        editingTaskId = null
+        editingTaskDraft = ""
+        if (newTaskId == taskId) {
+            newTaskId = null
+            if (position >= 0) {
+                tasks.removeAt(position)
+                notifyItemRemoved(position)
+            }
+        } else if (position >= 0) {
+            notifyItemChanged(position)
+        }
+    }
+
+    fun deleteTask(taskId: String) {
+        val position = tasks.indexOfFirst { it.id == taskId }
+        taskManager.deleteTask(taskId)
+        if (editingTaskId == taskId) {
+            editingTaskId = null
+            editingTaskDraft = ""
+        }
+        if (newTaskId == taskId) newTaskId = null
+        if (position >= 0) {
+            tasks.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
+
+    fun moveTask(fromPosition: Int, toPosition: Int): Boolean {
+        if (fromPosition !in tasks.indices || toPosition !in tasks.indices) return false
+        val task = tasks.removeAt(fromPosition)
+        tasks.add(toPosition, task)
+        notifyItemMoved(fromPosition, toPosition)
+        return true
+    }
+
+    fun tasksInCurrentOrder(): List<Task> = tasks.toList()
+
     override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): TaskViewHolder {
         val view = android.view.LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(view, taskManager, onEditClick)
+        return TaskViewHolder(view, this, taskManager, onEditClick, onSaveClick, onDeleteClick, onStartDrag)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(tasks[position], position)
+        val task = tasks[position]
+        holder.bind(task, position, isReorderMode, editingTaskId == task.id, editingTaskDraft)
     }
 
     override fun getItemCount() = tasks.size
 
     class TaskViewHolder(
         itemView: android.view.View,
+        private val adapter: TaskAdapter,
         private val taskManager: TaskManager,
-        private val onEditClick: (taskId: String) -> Unit
+        private val onEditClick: (taskId: String) -> Unit,
+        private val onSaveClick: (taskId: String, name: String) -> Unit,
+        private val onDeleteClick: (Task) -> Unit,
+        private val onStartDrag: (RecyclerView.ViewHolder) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         private val taskName: android.widget.TextView = itemView.findViewById(R.id.taskName)
+        private val taskNameEdit: android.widget.EditText = itemView.findViewById(R.id.taskNameEdit)
         private val editButton: android.widget.ImageButton = itemView.findViewById(R.id.editButton)
+        private val dragHandle: android.widget.ImageButton = itemView.findViewById(R.id.dragHandle)
         private val completeToggle: android.widget.Switch = itemView.findViewById(R.id.completeToggle)
+        private val editActions: android.view.View = itemView.findViewById(R.id.taskEditActions)
+        private val saveButton: android.widget.ImageButton = itemView.findViewById(R.id.saveTaskButton)
+        private val deleteButton: android.widget.ImageButton = itemView.findViewById(R.id.deleteTaskButton)
+        private val cancelButton: android.widget.ImageButton = itemView.findViewById(R.id.cancelTaskEditButton)
         private val rootLayout: android.view.View = itemView
+        private var draftWatcher: TextWatcher? = null
 
-        fun bind(task: Task, position: Int) {
+        fun bind(task: Task, position: Int, isReorderMode: Boolean, isEditing: Boolean, editDraft: String) {
             taskName.text = task.name
+            taskName.visibility = if (isEditing) android.view.View.GONE else android.view.View.VISIBLE
+            taskNameEdit.visibility = if (isEditing) android.view.View.VISIBLE else android.view.View.GONE
+            editButton.visibility = if (isReorderMode || isEditing) android.view.View.GONE else android.view.View.VISIBLE
+            dragHandle.visibility = if (isReorderMode) android.view.View.VISIBLE else android.view.View.GONE
+            completeToggle.visibility = if (isEditing) android.view.View.GONE else android.view.View.VISIBLE
+            editActions.visibility = if (isEditing) android.view.View.VISIBLE else android.view.View.GONE
+
+            draftWatcher?.let(taskNameEdit::removeTextChangedListener)
+            draftWatcher = null
+            if (isEditing) {
+                taskNameEdit.setText(editDraft)
+                taskNameEdit.setSelection(taskNameEdit.text.length)
+                draftWatcher = object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        adapter.updateEditingDraft(task.id, s?.toString().orEmpty())
+                    }
+                    override fun afterTextChanged(s: Editable?) = Unit
+                }
+                taskNameEdit.addTextChangedListener(draftWatcher)
+                taskNameEdit.post {
+                    if (taskNameEdit.visibility == android.view.View.VISIBLE) {
+                        taskNameEdit.requestFocus()
+                        taskNameEdit.setSelection(taskNameEdit.text.length)
+                        val inputMethodManager = itemView.context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+                                as android.view.inputmethod.InputMethodManager
+                        inputMethodManager.showSoftInput(taskNameEdit, 0)
+                    }
+                }
+            } else {
+                taskNameEdit.setText("")
+            }
+
+            dragHandle.setOnTouchListener(
+                if (isReorderMode) android.view.View.OnTouchListener { _, event ->
+                    if (event.actionMasked == android.view.MotionEvent.ACTION_DOWN) {
+                        onStartDrag(this)
+                    }
+                    true
+                } else {
+                    null
+                }
+            )
             
             // Set alternating background colors
             val backgroundColor = itemView.context.getColor(
@@ -278,6 +512,25 @@ class TaskAdapter(
             editButton.setOnClickListener {
                 onEditClick(task.id)
             }
+            saveButton.setOnClickListener {
+                if (taskNameEdit.text.toString().isNotBlank()) hideKeyboard()
+                onSaveClick(task.id, taskNameEdit.text.toString())
+            }
+            deleteButton.setOnClickListener {
+                hideKeyboard()
+                onDeleteClick(task)
+            }
+            cancelButton.setOnClickListener {
+                hideKeyboard()
+                adapter.cancelEditing(task.id)
+            }
+        }
+
+        private fun hideKeyboard() {
+            val inputMethodManager = itemView.context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+                    as android.view.inputmethod.InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(taskNameEdit.windowToken, 0)
+            taskNameEdit.clearFocus()
         }
     }
 }

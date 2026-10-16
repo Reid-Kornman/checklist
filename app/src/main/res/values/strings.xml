@@ -1,5 +1,17 @@
 <resources>
     <string name="app_name">Checklist</string>
+    <string name="add_routine">Add routine</string>
+    <string name="reorder_task">Reorder task</string>
+    <string name="reorder_tasks">Reorder Tasks</string>
+    <string name="save_order">Save Order</string>
+    <string name="edit_task_name">Task name</string>
+    <string name="save_task">Save task</string>
+    <string name="delete_task">Delete task</string>
+    <string name="cancel_task_edit">Cancel editing</string>
+    <string name="delete_task_title">Delete task?</string>
+    <string name="delete_task_confirmation">Delete &quot;%1$s&quot;?</string>
+    <string name="task_name_required">Task name cannot be empty</string>
+    <string name="finish_task_edit_first">Finish the current task edit or reorder first</string>
     <string name="help_icon_description">Help</string>
     <string name="dark_mode_switch_to_dark">Switch to dark mode</string>
     <string name="dark_mode_switch_to_light">Switch to light mode</string>
