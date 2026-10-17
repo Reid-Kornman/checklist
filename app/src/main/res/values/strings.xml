@@ -4,8 +4,14 @@
     <string name="reorder_task">Reorder task</string>
     <string name="reorder_tasks">Reorder Tasks</string>
     <string name="save_order">Save Order</string>
+    <string name="no_tasks_created">No tasks created</string>
+    <string name="delete_routine">Delete Routine</string>
+    <string name="delete_routine_title">Delete routine?</string>
+    <string name="delete_routine_confirmation">Delete &quot;%1$s&quot;?</string>
     <string name="edit_task_name">Task name</string>
     <string name="save_task">Save task</string>
+    <string name="save_routine">Save routine</string>
+    <string name="cancel_routine">Cancel routine editing</string>
     <string name="delete_task">Delete task</string>
     <string name="cancel_task_edit">Cancel editing</string>
     <string name="delete_task_title">Delete task?</string>

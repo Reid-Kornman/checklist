@@ -15,6 +15,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.Lifecycle
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -27,7 +29,29 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: TaskAdapter
     private lateinit var taskManager: TaskManager
     private lateinit var routineSpinner: Spinner
+    private lateinit var addTaskButton: Button
+    private lateinit var emptyRoutineState: android.view.View
     private var selectedRoutineId: String? = null
+    private var pendingRoutineTaskId: String? = null
+    private val addRoutineLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.getStringExtra(EditRoutineActivity.EXTRA_ROUTINE_ID)?.let { routineId ->
+                selectedRoutineId = routineId
+                pendingRoutineTaskId = routineId
+                addTaskButton.post {
+                    if (pendingRoutineTaskId == routineId &&
+                        lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+                    ) {
+                        refreshRoutineSpinner()
+                        loadTasks()
+                        completeNewRoutineCreation()
+                    }
+                }
+            }
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         taskManager = TaskManager(this)
 
         routineSpinner = findViewById(R.id.routineSpinner)
+        emptyRoutineState = findViewById(R.id.emptyRoutineState)
         selectedRoutineId = intent.getStringExtra("routine_id")
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -77,14 +102,18 @@ class MainActivity : AppCompatActivity() {
                     .setPositiveButton(R.string.delete_task) { _, _ -> adapter.deleteTask(task.id) }
                     .show()
             },
-            onStartDrag = { viewHolder -> itemTouchHelper.startDrag(viewHolder) }
+            onStartDrag = { viewHolder -> itemTouchHelper.startDrag(viewHolder) },
+            onTaskListChanged = { updateEmptyRoutineState() }
         )
         recyclerView.adapter = adapter
 
         val addRoutineButton = findViewById<android.widget.ImageButton>(R.id.addRoutineButton)
         addRoutineButton.setOnClickListener {
-            val intent = Intent(this, EditRoutineActivity::class.java)
-            startActivity(intent)
+            addRoutineLauncher.launch(Intent(this, EditRoutineActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.deleteEmptyRoutineButton).setOnClickListener {
+            confirmDeleteSelectedRoutine()
         }
 
         val reorderTasksButton = findViewById<Button>(R.id.reorderTasksButton)
@@ -100,30 +129,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val addTaskButton = findViewById<Button>(R.id.addTaskButton)
-        addTaskButton.setOnClickListener {
-            if (adapter.isEditing || adapter.isReorderMode) {
-                Toast.makeText(this, R.string.finish_task_edit_first, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val currentRoutineId = selectedRoutineId ?: return@setOnClickListener
-            val routine = taskManager.getRoutines().find { it.id == currentRoutineId } ?: return@setOnClickListener
-            val tasksForRoutine = taskManager.getTasks().filter { it.routineId == currentRoutineId }
-            val nextOrder = (tasksForRoutine.maxOfOrNull { it.order } ?: -1) + 1
-            val task = Task(
-                id = java.util.UUID.randomUUID().toString(),
-                name = "",
-                order = nextOrder,
-                startTime = routine.startTime,
-                endTime = routine.endTime,
-                routineId = currentRoutineId
-            )
-
-            if (adapter.addTask(task)) {
-                recyclerView.scrollToPosition(adapter.itemCount - 1)
-            }
-        }
+        addTaskButton = findViewById(R.id.addTaskButton)
+        addTaskButton.setOnClickListener { addTaskForSelectedRoutine() }
 
         val resetStatusButton = findViewById<Button>(R.id.resetStatusButton)
         resetStatusButton.setOnClickListener {
@@ -146,6 +153,11 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         refreshRoutineSpinner()
         loadTasks()
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+        completeNewRoutineCreation()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -191,18 +203,24 @@ class MainActivity : AppCompatActivity() {
         }
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, routineDisplayNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        routineSpinner.onItemSelectedListener = null
         routineSpinner.adapter = adapter
 
         if (routines.isNotEmpty()) {
             val selectedIndex = routines.indexOfFirst { it.id == selectedRoutineId }.takeIf { it >= 0 } ?: 0
             routineSpinner.setSelection(selectedIndex)
             selectedRoutineId = routines[selectedIndex].id
+        } else {
+            selectedRoutineId = null
         }
 
         routineSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
-                selectedRoutineId = routines[position].id
-                loadTasks()
+                val routineId = routines[position].id
+                if (selectedRoutineId != routineId) {
+                    selectedRoutineId = routineId
+                    loadTasks()
+                }
             }
 
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
@@ -211,10 +229,74 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun completeNewRoutineCreation() {
+        val pendingRoutineId = pendingRoutineTaskId ?: return
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
+
+        pendingRoutineTaskId = null
+        selectedRoutineId = pendingRoutineId
+        refreshRoutineSpinner()
+        loadTasks()
+        addTaskForSelectedRoutine()
+    }
+
+    private fun addTaskForSelectedRoutine() {
+        if (adapter.isEditing || adapter.isReorderMode) {
+            Toast.makeText(this, R.string.finish_task_edit_first, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val currentRoutineId = selectedRoutineId ?: return
+        val routine = taskManager.getRoutines().find { it.id == currentRoutineId } ?: return
+        val tasksForRoutine = taskManager.getTasks().filter { it.routineId == currentRoutineId }
+        val nextOrder = (tasksForRoutine.maxOfOrNull { it.order } ?: -1) + 1
+        val task = Task(
+            id = java.util.UUID.randomUUID().toString(),
+            name = "",
+            order = nextOrder,
+            startTime = routine.startTime,
+            endTime = routine.endTime,
+            routineId = currentRoutineId
+        )
+
+        if (adapter.addTask(task)) {
+            recyclerView.scrollToPosition(adapter.itemCount - 1)
+        }
+    }
+
     private fun loadTasks() {
-        val routineId = selectedRoutineId ?: return
+        val routineId = selectedRoutineId
+        if (routineId == null) {
+            adapter.updateTasks(emptyList())
+            return
+        }
         val tasksForRoutine = taskManager.getTasks().filter { it.routineId == routineId }.sortedBy { it.order }
         adapter.updateTasks(tasksForRoutine)
+    }
+
+    private fun updateEmptyRoutineState() {
+        emptyRoutineState.visibility = if (selectedRoutineId != null && adapter.itemCount == 0) {
+            android.view.View.VISIBLE
+        } else {
+            android.view.View.GONE
+        }
+    }
+
+    private fun confirmDeleteSelectedRoutine() {
+        val routineId = selectedRoutineId ?: return
+        val routine = taskManager.getRoutines().find { it.id == routineId } ?: return
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.delete_routine_title)
+            .setMessage(getString(R.string.delete_routine_confirmation, routine.name))
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.delete_routine) { _, _ ->
+                taskManager.deleteRoutine(routineId)
+                selectedRoutineId = null
+                refreshRoutineSpinner()
+                loadTasks()
+            }
+            .show()
     }
 
     private fun saveTaskOrder() {
@@ -228,8 +310,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateReorderButton(button: Button, isSaving: Boolean) {
         button.text = getString(if (isSaving) R.string.save_order else R.string.reorder_tasks)
-        val icon = if (isSaving) android.R.drawable.ic_menu_save else android.R.drawable.ic_menu_sort_by_size
+        val icon = if (isSaving) R.drawable.ic_check else android.R.drawable.ic_menu_sort_by_size
         button.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
+        button.compoundDrawableTintList = android.content.res.ColorStateList.valueOf(
+            getColor(if (isSaving) R.color.action_save else R.color.action_icon)
+        )
     }
 
     private fun showHelpDialog() {
@@ -283,7 +368,8 @@ class TaskAdapter(
     private val onEditClick: (taskId: String) -> Unit,
     private val onSaveClick: (taskId: String, name: String) -> Unit,
     private val onDeleteClick: (Task) -> Unit,
-    private val onStartDrag: (RecyclerView.ViewHolder) -> Unit
+    private val onStartDrag: (RecyclerView.ViewHolder) -> Unit,
+    private val onTaskListChanged: () -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private val tasks = mutableListOf<Task>()
@@ -304,6 +390,7 @@ class TaskAdapter(
         tasks.clear()
         tasks.addAll(newTasks)
         notifyDataSetChanged()
+        onTaskListChanged()
     }
 
     fun updateTaskAt(position: Int, task: Task) {
@@ -334,6 +421,7 @@ class TaskAdapter(
         editingTaskDraft = ""
         newTaskId = task.id
         notifyItemInserted(position)
+        onTaskListChanged()
         return true
     }
 
@@ -370,6 +458,7 @@ class TaskAdapter(
         } else if (position >= 0) {
             notifyItemChanged(position)
         }
+        onTaskListChanged()
     }
 
     fun deleteTask(taskId: String) {
@@ -384,6 +473,7 @@ class TaskAdapter(
             tasks.removeAt(position)
             notifyItemRemoved(position)
         }
+        onTaskListChanged()
     }
 
     fun moveTask(fromPosition: Int, toPosition: Int): Boolean {

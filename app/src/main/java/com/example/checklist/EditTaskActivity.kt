@@ -5,7 +5,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import java.util.*
 
 class EditTaskActivity : AppCompatActivity() {
@@ -29,9 +28,9 @@ class EditTaskActivity : AppCompatActivity() {
 
         nameEditText = findViewById(R.id.taskNameEditText)
         orderEditText = findViewById(R.id.orderEditText)
-        val saveButton = findViewById<AppCompatButton>(R.id.saveButton)
+        val saveButton = findViewById<ImageButton>(R.id.saveButton)
         val deleteButton = findViewById<ImageButton>(R.id.deleteButton)
-        val cancelButton = findViewById<AppCompatButton>(R.id.cancelButton)
+        val cancelButton = findViewById<ImageButton>(R.id.cancelButton)
 
         taskId = intent.getStringExtra("task_id")
         selectedRoutineId = intent.getStringExtra("routine_id")

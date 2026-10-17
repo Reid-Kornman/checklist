@@ -1,6 +1,8 @@
 package com.example.checklist
 
+import android.app.Activity
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -14,7 +16,7 @@ class EditRoutineActivity : AppCompatActivity() {
     private lateinit var nameEditText: EditText
     private lateinit var startTimeButton: Button
     private lateinit var endTimeButton: Button
-    private lateinit var saveButton: Button
+    private lateinit var saveButton: ImageButton
 
     private var routineId: String? = null
     private var startTime = "09:00"
@@ -35,7 +37,7 @@ class EditRoutineActivity : AppCompatActivity() {
         startTimeButton = findViewById(R.id.startTimeButton)
         endTimeButton = findViewById(R.id.endTimeButton)
         saveButton = findViewById(R.id.saveRoutineButton)
-        val cancelButton = findViewById<Button>(R.id.cancelRoutineButton)
+        val cancelButton = findViewById<ImageButton>(R.id.cancelRoutineButton)
         val deleteButton = findViewById<ImageButton>(R.id.deleteRoutineButton)
 
         routineId = intent.getStringExtra("routine_id")
@@ -65,9 +67,13 @@ class EditRoutineActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            val isNewRoutine = routineId == null
             val id = routineId ?: java.util.UUID.randomUUID().toString()
             val routine = Routine(id, name, startTime, endTime)
             taskManager.saveRoutine(routine)
+            if (isNewRoutine) {
+                setResult(Activity.RESULT_OK, Intent().putExtra(EXTRA_ROUTINE_ID, id))
+            }
             Toast.makeText(this, "Routine saved", Toast.LENGTH_SHORT).show()
             finish()
         }
@@ -100,5 +106,9 @@ class EditRoutineActivity : AppCompatActivity() {
     private fun updateTimeButtons() {
         startTimeButton.text = toAmPm(startTime)
         endTimeButton.text = toAmPm(endTime)
+    }
+
+    companion object {
+        const val EXTRA_ROUTINE_ID = "routine_id"
     }
 }

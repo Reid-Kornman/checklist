@@ -33,29 +33,39 @@
 
             <ImageButton
                 android:id="@+id/deleteButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:src="@android:drawable/ic_menu_delete"
                 android:contentDescription="Delete task"
+                android:padding="12dp"
+                android:scaleType="centerInside"
                 android:background="?attr/selectableItemBackground"
                 android:layout_marginEnd="16dp"
-                android:tint="@android:color/holo_red_dark"
+                android:tint="@color/action_cancel"
                 android:visibility="gone" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/saveButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="0dp"
-                android:text="Save"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_check"
+                android:contentDescription="@string/save_task"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="@color/action_save"
                 android:layout_marginEnd="8dp" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/cancelButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="0dp"
-                android:text="Cancel" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_close"
+                android:contentDescription="@string/cancel_task_edit"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="@color/action_cancel" />
 
         </LinearLayout>
 

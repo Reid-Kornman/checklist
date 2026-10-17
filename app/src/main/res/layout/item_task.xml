@@ -24,6 +24,7 @@
         android:src="@drawable/ic_drag_handle"
         android:contentDescription="@string/reorder_task"
         android:scaleType="centerInside"
+        android:tint="?attr/colorControlNormal"
         android:background="?attr/selectableItemBackground"
         android:layout_marginEnd="16dp"
         android:visibility="gone" />
@@ -56,30 +57,34 @@
 
         <ImageButton
             android:id="@+id/saveTaskButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/ic_check"
             android:contentDescription="@string/save_task"
+            android:padding="12dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="#2E7D32" />
+            android:tint="@color/action_save" />
 
         <ImageButton
             android:id="@+id/deleteTaskButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@android:drawable/ic_menu_delete"
             android:contentDescription="@string/delete_task"
+            android:padding="12dp"
+            android:scaleType="centerInside"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="#D32F2F" />
+            android:tint="@color/action_cancel" />
 
         <ImageButton
             android:id="@+id/cancelTaskEditButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_close"
             android:contentDescription="@string/cancel_task_edit"
+            android:padding="12dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="#1976D2" />
+            android:tint="@color/action_cancel" />
     </LinearLayout>
 
     <Switch

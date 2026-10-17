@@ -16,4 +16,9 @@
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
     </style>
+
+    <style name="Theme.Checklist.RoutineModal" parent="Theme.Checklist.TaskModal">
+        <item name="android:windowMinWidthMajor">45%</item>
+        <item name="android:windowMinWidthMinor">45%</item>
+    </style>
 </resources>

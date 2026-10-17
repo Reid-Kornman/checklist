@@ -1,4 +1,7 @@
 <resources>
     <color name="task_row_even">#303030</color>
     <color name="task_row_odd">#242424</color>
+    <color name="action_icon">#BDBDBD</color>
+    <color name="action_save">#81C784</color>
+    <color name="action_cancel">#EF5350</color>
 </resources>
