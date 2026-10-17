@@ -17,11 +17,11 @@ The task list shows the selected routine's tasks in their configured order. Rout
 
 | Light mode | Dark mode |
 |---|---|
-| <img src="docs/screenshots/Screenshot_20261016_225440.png" width="280" alt="Checklist with completed and incomplete tasks in light mode"> | <img src="docs/screenshots/Screenshot_20261016_225503.png" width="280" alt="Checklist with completed and incomplete tasks in dark mode"> |
+| <img src="docs/screenshots/checklist-light-mode.png" width="280" alt="Checklist with completed and incomplete tasks in light mode"> | <img src="docs/screenshots/checklist-dark-mode.png" width="280" alt="Checklist with completed and incomplete tasks in dark mode"> |
 
 | Add a task | Add a routine |
 |---|---|
-| <img src="docs/screenshots/Screenshot_20261016_225529.png" width="280" alt="Entering a new task inline with the keyboard open"> | <img src="docs/screenshots/Screenshot_20261016_225542.png" width="280" alt="Add Routine dialog with routine name and start and end times"> |
+| <img src="docs/screenshots/add-task-inline.png" width="280" alt="Entering a new task inline with the keyboard open"> | <img src="docs/screenshots/add-routine-dialog.png" width="280" alt="Add Routine dialog with routine name and start and end times"> |
 
 ## Task Workflow
 
