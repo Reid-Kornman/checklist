@@ -13,6 +13,16 @@ A native Android checklist for organizing tasks into routines.
 
 The task list shows the selected routine's tasks in their configured order. Routine times are displayed but do not automatically filter tasks by the current time.
 
+## Screenshots
+
+| Light mode | Dark mode |
+|---|---|
+| <img src="docs/screenshots/Screenshot_20261016_225440.png" width="280" alt="Checklist with completed and incomplete tasks in light mode"> | <img src="docs/screenshots/Screenshot_20261016_225503.png" width="280" alt="Checklist with completed and incomplete tasks in dark mode"> |
+
+| Add a task | Add a routine |
+|---|---|
+| <img src="docs/screenshots/Screenshot_20261016_225529.png" width="280" alt="Entering a new task inline with the keyboard open"> | <img src="docs/screenshots/Screenshot_20261016_225542.png" width="280" alt="Add Routine dialog with routine name and start and end times"> |
+
 ## Task Workflow
 
 - Select a routine from the list at the top of the screen.
