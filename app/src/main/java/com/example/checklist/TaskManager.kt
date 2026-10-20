@@ -24,7 +24,8 @@ class TaskManager(context: Context) {
                     startTime = obj.getString("startTime"),
                     endTime = obj.getString("endTime"),
                     routineId = obj.optString("routineId", ""),
-                    completed = obj.optBoolean("completed", false)
+                    completed = obj.optBoolean("completed", false),
+                    emoji = obj.optString("emoji", "")
                 ))
             }
             tasks
@@ -44,6 +45,7 @@ class TaskManager(context: Context) {
             obj.put("endTime", task.endTime)
             obj.put("routineId", task.routineId)
             obj.put("completed", task.completed)
+            obj.put("emoji", task.emoji)
             jsonArray.put(obj)
         }
         sharedPreferences.edit().putString(tasksKey, jsonArray.toString()).apply()

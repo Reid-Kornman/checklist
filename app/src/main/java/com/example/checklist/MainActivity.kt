@@ -1,12 +1,19 @@
 package com.example.checklist
 
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
+import android.os.Handler
+import android.os.Looper
+import android.os.PowerManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
+import android.view.Gravity
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.GridLayout
+import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -22,14 +29,30 @@ import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.time.Instant
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.time.ZoneId
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
+
+    private val weekdayRefreshHandler = Handler(Looper.getMainLooper())
+    private val weekdayRefreshRunnable = object : Runnable {
+        override fun run() {
+            if (refreshWeekdayTitleIfNeeded()) loadTasks()
+            if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && hasWindowFocus()) {
+                weekdayRefreshHandler.postDelayed(this, WEEKDAY_TITLE_REFRESH_INTERVAL)
+            }
+        }
+    }
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TaskAdapter
     private lateinit var taskManager: TaskManager
     private lateinit var routineSpinner: Spinner
     private lateinit var addTaskButton: Button
+    private lateinit var editTasksButton: Button
     private lateinit var emptyRoutineState: android.view.View
     private var selectedRoutineId: String? = null
     private var pendingRoutineTaskId: String? = null
@@ -75,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                if (!adapter.isReorderMode) return false
+                if (!adapter.isEditMode) return false
                 return adapter.moveTask(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
             }
 
@@ -86,14 +109,6 @@ class MainActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
         adapter = TaskAdapter(
             taskManager,
-            onEditClick = { taskId ->
-                adapter.beginEditing(taskId)
-            },
-            onSaveClick = { taskId, name ->
-                if (!adapter.saveTaskName(taskId, name)) {
-                    Toast.makeText(this, R.string.task_name_required, Toast.LENGTH_SHORT).show()
-                }
-            },
             onDeleteClick = { task ->
                 AlertDialog.Builder(this)
                     .setTitle(R.string.delete_task_title)
@@ -116,16 +131,20 @@ class MainActivity : AppCompatActivity() {
             confirmDeleteSelectedRoutine()
         }
 
-        val reorderTasksButton = findViewById<Button>(R.id.reorderTasksButton)
-        reorderTasksButton.setOnClickListener {
-            if (adapter.isEditing) return@setOnClickListener
-            if (adapter.isReorderMode) {
-                saveTaskOrder()
-                adapter.setReorderMode(false)
-                updateReorderButton(reorderTasksButton, false)
+        editTasksButton = findViewById(R.id.editTasksButton)
+        updateEditTasksButton(false)
+        editTasksButton.setOnClickListener {
+            if (adapter.isEditMode) {
+                if (!adapter.saveChanges()) {
+                    Toast.makeText(this, R.string.task_name_required, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                routineSpinner.isEnabled = true
+                updateEditTasksButton(false)
             } else {
-                adapter.setReorderMode(true)
-                updateReorderButton(reorderTasksButton, true)
+                adapter.beginEditing()
+                routineSpinner.isEnabled = false
+                updateEditTasksButton(true)
             }
         }
 
@@ -151,8 +170,63 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        scheduleWeekdayTitleRefresh()
         refreshRoutineSpinner()
         loadTasks()
+    }
+
+    override fun onPause() {
+        weekdayRefreshHandler.removeCallbacks(weekdayRefreshRunnable)
+        super.onPause()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            scheduleWeekdayTitleRefresh()
+        } else {
+            weekdayRefreshHandler.removeCallbacks(weekdayRefreshRunnable)
+        }
+    }
+
+    private fun scheduleWeekdayTitleRefresh() {
+        weekdayRefreshHandler.removeCallbacks(weekdayRefreshRunnable)
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && hasWindowFocus()) {
+            if (refreshWeekdayTitleIfNeeded()) loadTasks()
+            weekdayRefreshHandler.postDelayed(weekdayRefreshRunnable, WEEKDAY_TITLE_REFRESH_INTERVAL)
+        }
+    }
+
+    private fun refreshWeekdayTitleIfNeeded(force: Boolean = false): Boolean {
+        if (!hasWindowFocus() || getSystemService(PowerManager::class.java)?.isInteractive != true) return false
+
+        val preferences = getSharedPreferences(ChecklistApplication.PREFERENCES_NAME, MODE_PRIVATE)
+        val now = System.currentTimeMillis()
+        val lastRefresh = preferences.getLong(WEEKDAY_TITLE_REFRESH_KEY, 0L)
+        val today = LocalDate.now()
+        val lastRefreshDate = lastRefresh.takeIf { it != 0L }
+            ?.let { Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate() }
+        var tasksWereReset = false
+        val weekday = if (force || lastRefresh == 0L || now - lastRefresh > WEEKDAY_TITLE_REFRESH_INTERVAL) {
+            if (lastRefreshDate != null && lastRefreshDate != today) {
+                val tasks = taskManager.getTasks()
+                if (tasks.any { it.completed }) {
+                    taskManager.saveTasks(tasks.map { it.copy(completed = false) })
+                    tasksWereReset = true
+                }
+            }
+            today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH).also {
+                preferences.edit()
+                    .putLong(WEEKDAY_TITLE_REFRESH_KEY, now)
+                    .putString(WEEKDAY_TITLE_VALUE_KEY, it)
+                    .apply()
+            }
+        } else {
+            preferences.getString(WEEKDAY_TITLE_VALUE_KEY, null)
+                ?: today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+        }
+        title = "Checklist - $weekday"
+        return tasksWereReset
     }
 
     override fun onPostResume() {
@@ -196,6 +270,12 @@ class MainActivity : AppCompatActivity() {
         MODE_PRIVATE
     ).getBoolean(ChecklistApplication.DARK_MODE_KEY, false)
 
+    companion object {
+        private const val WEEKDAY_TITLE_REFRESH_INTERVAL = 60 * 60 * 1000L
+        private const val WEEKDAY_TITLE_REFRESH_KEY = "weekday_title_last_refresh"
+        private const val WEEKDAY_TITLE_VALUE_KEY = "weekday_title_value"
+    }
+
     private fun refreshRoutineSpinner() {
         val routines = taskManager.getRoutines()
         val routineDisplayNames = routines.map {
@@ -219,6 +299,7 @@ class MainActivity : AppCompatActivity() {
                 val routineId = routines[position].id
                 if (selectedRoutineId != routineId) {
                     selectedRoutineId = routineId
+                    refreshWeekdayTitleIfNeeded(force = true)
                     loadTasks()
                 }
             }
@@ -241,9 +322,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addTaskForSelectedRoutine() {
-        if (adapter.isEditing || adapter.isReorderMode) {
-            Toast.makeText(this, R.string.finish_task_edit_first, Toast.LENGTH_SHORT).show()
-            return
+        if (!adapter.isEditMode) {
+            adapter.beginEditing()
+            routineSpinner.isEnabled = false
+            updateEditTasksButton(true)
         }
 
         val currentRoutineId = selectedRoutineId ?: return
@@ -299,22 +381,16 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun saveTaskOrder() {
-        val reorderedTasks = adapter.tasksInCurrentOrder().mapIndexed { index, task ->
-            task.copy(order = index)
-        }
-        val updatedTasksById = reorderedTasks.associateBy { it.id }
-        val allTasks = taskManager.getTasks().map { task -> updatedTasksById[task.id] ?: task }
-        taskManager.saveTasks(allTasks)
-    }
-
-    private fun updateReorderButton(button: Button, isSaving: Boolean) {
-        button.text = getString(if (isSaving) R.string.save_order else R.string.reorder_tasks)
-        val icon = if (isSaving) R.drawable.ic_check else android.R.drawable.ic_menu_sort_by_size
-        button.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
-        button.compoundDrawableTintList = android.content.res.ColorStateList.valueOf(
-            getColor(if (isSaving) R.color.action_save else R.color.action_icon)
-        )
+    private fun updateEditTasksButton(isSaving: Boolean) {
+        editTasksButton.text = getString(if (isSaving) R.string.save_tasks else R.string.edit_tasks)
+        val iconSize = (24 * resources.displayMetrics.density).toInt()
+        val iconResource = if (isSaving) R.drawable.ic_check else android.R.drawable.ic_menu_edit
+        val icon = androidx.core.content.ContextCompat.getDrawable(this, iconResource)
+            ?.mutate()
+            ?.apply { setBounds(0, 0, iconSize, iconSize) }
+        editTasksButton.setCompoundDrawablesRelative(icon, null, null, null)
+        val tint = if (isSaving) R.color.action_save else R.color.action_edit
+        editTasksButton.compoundDrawableTintList = android.content.res.ColorStateList.valueOf(getColor(tint))
     }
 
     private fun showHelpDialog() {
@@ -353,7 +429,8 @@ data class Task(
     val startTime: String,
     val endTime: String,
     val routineId: String,
-    val completed: Boolean = false
+    val completed: Boolean = false,
+    val emoji: String = ""
 )
 
 data class Routine(
@@ -365,30 +442,23 @@ data class Routine(
 
 class TaskAdapter(
     private val taskManager: TaskManager,
-    private val onEditClick: (taskId: String) -> Unit,
-    private val onSaveClick: (taskId: String, name: String) -> Unit,
     private val onDeleteClick: (Task) -> Unit,
     private val onStartDrag: (RecyclerView.ViewHolder) -> Unit,
     private val onTaskListChanged: () -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private val tasks = mutableListOf<Task>()
-    private var editingTaskId: String? = null
-    private var editingTaskDraft = ""
-    private var newTaskId: String? = null
-    var isReorderMode = false
+    private val editedNames = mutableMapOf<String, String>()
+    var isEditMode = false
         private set
-    val isEditing: Boolean
-        get() = editingTaskId != null
 
     fun updateTasks(newTasks: List<Task>) {
-        if (editingTaskId != null && newTasks.none { it.id == editingTaskId }) {
-            editingTaskId = null
-            editingTaskDraft = ""
-        }
-        if (newTaskId != null && newTasks.none { it.id == newTaskId }) newTaskId = null
+        editedNames.keys.retainAll(newTasks.mapTo(mutableSetOf()) { it.id })
         tasks.clear()
         tasks.addAll(newTasks)
+        if (isEditMode) {
+            tasks.forEach { task -> editedNames.putIfAbsent(task.id, task.name) }
+        }
         notifyDataSetChanged()
         onTaskListChanged()
     }
@@ -400,75 +470,55 @@ class TaskAdapter(
         }
     }
 
-    fun setReorderMode(enabled: Boolean) {
-        isReorderMode = enabled
+    fun updateTaskEmoji(taskId: String, emoji: String) {
+        val position = tasks.indexOfFirst { it.id == taskId }
+        if (position < 0) return
+        tasks[position] = tasks[position].copy(emoji = emoji)
+        notifyItemChanged(position)
+    }
+
+    fun beginEditing() {
+        if (isEditMode) return
+        isEditMode = true
+        tasks.forEach { editedNames[it.id] = it.name }
         notifyDataSetChanged()
     }
 
-    fun beginEditing(taskId: String) {
-        if (isReorderMode || isEditing) return
-        val task = tasks.find { it.id == taskId } ?: return
-        editingTaskId = taskId
-        editingTaskDraft = task.name
-        notifyItemChanged(tasks.indexOf(task))
-    }
-
     fun addTask(task: Task): Boolean {
-        if (isReorderMode || isEditing) return false
+        if (!isEditMode) return false
         val position = tasks.size
         tasks.add(task)
-        editingTaskId = task.id
-        editingTaskDraft = ""
-        newTaskId = task.id
+        editedNames[task.id] = ""
         notifyItemInserted(position)
         onTaskListChanged()
         return true
     }
 
     fun updateEditingDraft(taskId: String, draft: String) {
-        if (editingTaskId == taskId) editingTaskDraft = draft
+        if (isEditMode && taskId in editedNames) editedNames[taskId] = draft
     }
 
-    fun saveTaskName(taskId: String, name: String): Boolean {
-        val position = tasks.indexOfFirst { it.id == taskId }
-        val updatedName = name.trim()
-        if (position < 0 || editingTaskId != taskId || updatedName.isEmpty()) return false
-
-        val updatedTask = tasks[position].copy(name = updatedName)
-        taskManager.saveTask(updatedTask)
-        tasks[position] = updatedTask
-        editingTaskId = null
-        editingTaskDraft = ""
-        newTaskId = null
-        notifyItemChanged(position)
-        return true
-    }
-
-    fun cancelEditing(taskId: String) {
-        if (editingTaskId != taskId) return
-        val position = tasks.indexOfFirst { it.id == taskId }
-        editingTaskId = null
-        editingTaskDraft = ""
-        if (newTaskId == taskId) {
-            newTaskId = null
-            if (position >= 0) {
-                tasks.removeAt(position)
-                notifyItemRemoved(position)
-            }
-        } else if (position >= 0) {
-            notifyItemChanged(position)
+    fun saveChanges(): Boolean {
+        val updatedTasks = tasks.mapIndexed { index, task ->
+            val name = editedNames[task.id]?.trim().orEmpty()
+            if (name.isEmpty()) return false
+            task.copy(name = name, order = index)
         }
-        onTaskListChanged()
+        val updatedTasksById = updatedTasks.associateBy { it.id }
+        val allTasks = taskManager.getTasks().map { task -> updatedTasksById[task.id] ?: task }
+        taskManager.saveTasks(allTasks + updatedTasks.filter { updated -> allTasks.none { it.id == updated.id } })
+        tasks.clear()
+        tasks.addAll(updatedTasks)
+        editedNames.clear()
+        isEditMode = false
+        notifyDataSetChanged()
+        return true
     }
 
     fun deleteTask(taskId: String) {
         val position = tasks.indexOfFirst { it.id == taskId }
         taskManager.deleteTask(taskId)
-        if (editingTaskId == taskId) {
-            editingTaskId = null
-            editingTaskDraft = ""
-        }
-        if (newTaskId == taskId) newTaskId = null
+        editedNames.remove(taskId)
         if (position >= 0) {
             tasks.removeAt(position)
             notifyItemRemoved(position)
@@ -488,12 +538,12 @@ class TaskAdapter(
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): TaskViewHolder {
         val view = android.view.LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(view, this, taskManager, onEditClick, onSaveClick, onDeleteClick, onStartDrag)
+        return TaskViewHolder(view, this, taskManager, onDeleteClick, onStartDrag)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
-        holder.bind(task, position, isReorderMode, editingTaskId == task.id, editingTaskDraft)
+        holder.bind(task, position, isEditMode, editedNames[task.id].orEmpty())
     }
 
     override fun getItemCount() = tasks.size
@@ -502,35 +552,41 @@ class TaskAdapter(
         itemView: android.view.View,
         private val adapter: TaskAdapter,
         private val taskManager: TaskManager,
-        private val onEditClick: (taskId: String) -> Unit,
-        private val onSaveClick: (taskId: String, name: String) -> Unit,
         private val onDeleteClick: (Task) -> Unit,
         private val onStartDrag: (RecyclerView.ViewHolder) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         private val taskName: android.widget.TextView = itemView.findViewById(R.id.taskName)
         private val taskNameEdit: android.widget.EditText = itemView.findViewById(R.id.taskNameEdit)
-        private val editButton: android.widget.ImageButton = itemView.findViewById(R.id.editButton)
+        private val taskBullet: android.widget.TextView = itemView.findViewById(R.id.taskBullet)
+        private val taskEmoji: android.widget.TextView = itemView.findViewById(R.id.taskEmoji)
         private val dragHandle: android.widget.ImageButton = itemView.findViewById(R.id.dragHandle)
+        private val emojiPickerButton: android.widget.TextView = itemView.findViewById(R.id.emojiPickerButton)
         private val completeToggle: android.widget.Switch = itemView.findViewById(R.id.completeToggle)
-        private val editActions: android.view.View = itemView.findViewById(R.id.taskEditActions)
-        private val saveButton: android.widget.ImageButton = itemView.findViewById(R.id.saveTaskButton)
         private val deleteButton: android.widget.ImageButton = itemView.findViewById(R.id.deleteTaskButton)
-        private val cancelButton: android.widget.ImageButton = itemView.findViewById(R.id.cancelTaskEditButton)
         private val rootLayout: android.view.View = itemView
         private var draftWatcher: TextWatcher? = null
 
-        fun bind(task: Task, position: Int, isReorderMode: Boolean, isEditing: Boolean, editDraft: String) {
+        fun bind(task: Task, position: Int, isEditMode: Boolean, editDraft: String) {
             taskName.text = task.name
-            taskName.visibility = if (isEditing) android.view.View.GONE else android.view.View.VISIBLE
-            taskNameEdit.visibility = if (isEditing) android.view.View.VISIBLE else android.view.View.GONE
-            editButton.visibility = if (isReorderMode || isEditing) android.view.View.GONE else android.view.View.VISIBLE
-            dragHandle.visibility = if (isReorderMode) android.view.View.VISIBLE else android.view.View.GONE
-            completeToggle.visibility = if (isEditing) android.view.View.GONE else android.view.View.VISIBLE
-            editActions.visibility = if (isEditing) android.view.View.VISIBLE else android.view.View.GONE
+            taskName.visibility = if (isEditMode) android.view.View.GONE else android.view.View.VISIBLE
+            taskNameEdit.visibility = if (isEditMode) android.view.View.VISIBLE else android.view.View.GONE
+            taskBullet.visibility = if (!isEditMode && task.emoji.isEmpty()) {
+                android.view.View.VISIBLE
+            } else {
+                android.view.View.GONE
+            }
+            taskEmoji.text = task.emoji
+            taskEmoji.visibility = if (!isEditMode && task.emoji.isNotEmpty()) android.view.View.VISIBLE else android.view.View.GONE
+            dragHandle.visibility = if (isEditMode) android.view.View.VISIBLE else android.view.View.GONE
+            emojiPickerButton.text = task.emoji.ifEmpty { "+" }
+            emojiPickerButton.contentDescription = itemView.context.getString(R.string.choose_task_emoji)
+            emojiPickerButton.visibility = if (isEditMode) android.view.View.VISIBLE else android.view.View.GONE
+            deleteButton.visibility = if (isEditMode) android.view.View.VISIBLE else android.view.View.GONE
+            completeToggle.visibility = if (isEditMode) android.view.View.GONE else android.view.View.VISIBLE
 
             draftWatcher?.let(taskNameEdit::removeTextChangedListener)
             draftWatcher = null
-            if (isEditing) {
+            if (isEditMode) {
                 taskNameEdit.setText(editDraft)
                 taskNameEdit.setSelection(taskNameEdit.text.length)
                 draftWatcher = object : TextWatcher {
@@ -541,21 +597,12 @@ class TaskAdapter(
                     override fun afterTextChanged(s: Editable?) = Unit
                 }
                 taskNameEdit.addTextChangedListener(draftWatcher)
-                taskNameEdit.post {
-                    if (taskNameEdit.visibility == android.view.View.VISIBLE) {
-                        taskNameEdit.requestFocus()
-                        taskNameEdit.setSelection(taskNameEdit.text.length)
-                        val inputMethodManager = itemView.context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
-                                as android.view.inputmethod.InputMethodManager
-                        inputMethodManager.showSoftInput(taskNameEdit, 0)
-                    }
-                }
             } else {
                 taskNameEdit.setText("")
             }
 
             dragHandle.setOnTouchListener(
-                if (isReorderMode) android.view.View.OnTouchListener { _, event ->
+                if (isEditMode) android.view.View.OnTouchListener { _, event ->
                     if (event.actionMasked == android.view.MotionEvent.ACTION_DOWN) {
                         onStartDrag(this)
                     }
@@ -564,6 +611,7 @@ class TaskAdapter(
                     null
                 }
             )
+            emojiPickerButton.setOnClickListener { showEmojiPicker(emojiPickerButton, task.id) }
             
             // Set alternating background colors
             val backgroundColor = itemView.context.getColor(
@@ -599,28 +647,64 @@ class TaskAdapter(
                     taskName.paintFlags = taskName.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 }
             }
-            editButton.setOnClickListener {
-                onEditClick(task.id)
-            }
-            saveButton.setOnClickListener {
-                if (taskNameEdit.text.toString().isNotBlank()) hideKeyboard()
-                onSaveClick(task.id, taskNameEdit.text.toString())
-            }
             deleteButton.setOnClickListener {
-                hideKeyboard()
                 onDeleteClick(task)
-            }
-            cancelButton.setOnClickListener {
-                hideKeyboard()
-                adapter.cancelEditing(task.id)
             }
         }
 
-        private fun hideKeyboard() {
-            val inputMethodManager = itemView.context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
-                    as android.view.inputmethod.InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(taskNameEdit.windowToken, 0)
-            taskNameEdit.clearFocus()
+        private fun showEmojiPicker(anchor: android.view.View, taskId: String) {
+            val context = itemView.context
+            val emojis = listOf(
+                "🧹", "🧺", "🧼", "🛏️", "🪥", "🚿", "🍽️", "🥣",
+                "🍎", "💧", "🧘", "🏃", "📚", "✍️", "💻", "📞",
+                "🛒", "💊", "🐕", "🌱", "🚗", "💰", "📦", "🎵", "⭐", "❤️"
+            )
+            val columns = 4
+            val density = context.resources.displayMetrics.density
+            val cellSize = (48 * density).toInt()
+            val padding = (4 * density).toInt()
+            val grid = GridLayout(context).apply {
+                columnCount = columns
+                setPadding(padding, padding, padding, padding)
+            }
+            val popup = PopupWindow(
+                grid,
+                cellSize * columns + padding * 2,
+                cellSize * ((emojis.size + 1 + columns - 1) / columns) + padding * 2,
+                true
+            ).apply {
+                setBackgroundDrawable(ColorDrawable(context.getColor(R.color.task_row_odd)))
+                elevation = 4 * density
+                isOutsideTouchable = true
+            }
+
+            (listOf("") + emojis).forEachIndexed { index, emoji ->
+                val option = TextView(context).apply {
+                    text = emoji.ifEmpty { "×" }
+                    textSize = 24f
+                    gravity = Gravity.CENTER
+                    contentDescription = if (emoji.isEmpty()) {
+                        context.getString(R.string.clear_task_emoji)
+                    } else {
+                        context.getString(R.string.task_emoji_option, emoji)
+                    }
+                    setBackgroundResource(android.R.drawable.list_selector_background)
+                    setOnClickListener {
+                        adapter.updateTaskEmoji(taskId, emoji)
+                        popup.dismiss()
+                    }
+                }
+                val params = GridLayout.LayoutParams(
+                    GridLayout.spec(index / columns),
+                    GridLayout.spec(index % columns)
+                ).apply {
+                    width = cellSize
+                    height = cellSize
+                }
+                grid.addView(option, params)
+            }
+
+            popup.showAsDropDown(anchor, anchor.width, -anchor.height)
         }
     }
 }
