@@ -2,8 +2,8 @@
     <string name="app_name">Checklist</string>
     <string name="add_routine">Add routine</string>
     <string name="reorder_task">Reorder task</string>
-    <string name="reorder_tasks">Reorder Tasks</string>
-    <string name="save_order">Save Order</string>
+    <string name="edit_tasks">Edit Tasks</string>
+    <string name="save_tasks">Save Tasks</string>
     <string name="no_tasks_created">No tasks created</string>
     <string name="delete_routine">Delete Routine</string>
     <string name="delete_routine_title">Delete routine?</string>
@@ -17,7 +17,9 @@
     <string name="delete_task_title">Delete task?</string>
     <string name="delete_task_confirmation">Delete &quot;%1$s&quot;?</string>
     <string name="task_name_required">Task name cannot be empty</string>
-    <string name="finish_task_edit_first">Finish the current task edit or reorder first</string>
+    <string name="choose_task_emoji">Choose task emoji</string>
+    <string name="clear_task_emoji">Clear task emoji</string>
+    <string name="task_emoji_option">Assign %1$s emoji</string>
     <string name="help_icon_description">Help</string>
     <string name="dark_mode_switch_to_dark">Switch to dark mode</string>
     <string name="dark_mode_switch_to_light">Switch to light mode</string>

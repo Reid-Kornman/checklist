@@ -90,16 +90,16 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/reorderTasksButton"
+            android:id="@+id/editTasksButton"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:minHeight="48dp"
             android:maxHeight="48dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:text="@string/reorder_tasks"
-            android:drawableStart="@android:drawable/ic_menu_sort_by_size"
-            android:drawableTint="@color/action_icon"
+            android:text="@string/edit_tasks"
+            android:drawableStart="@android:drawable/ic_menu_edit"
+            android:drawableTint="@color/action_edit"
             android:drawablePadding="6dp"
             android:textAllCaps="false" />
 

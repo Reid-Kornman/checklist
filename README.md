@@ -5,8 +5,7 @@ A native Android checklist for organizing tasks into routines.
 ## Features
 
 - Create, edit, and delete routines, each with a name and start/end times.
-- Add tasks directly to the selected routine and edit or delete them inline.
-- Reorder tasks by dragging them into position and saving the new order.
+- Add tasks to the selected routine, then edit names, assign emojis, delete, and reorder tasks in a shared editing mode.
 - Mark tasks complete and reset completion status.
 - Switch between light and dark mode; the selection is saved between launches.
 - Store routines and tasks locally on the device.
@@ -26,10 +25,8 @@ The task list shows the selected routine's tasks in their configured order. Rout
 ## Task Workflow
 
 - Select a routine from the list at the top of the screen.
-- Choose **Add Task** to create a task. Its name is entered inline; save it with the check button. Canceling a new task discards it.
-- Use the edit button beside a task to change its name. Save with the check button or cancel to keep the existing name. Use the delete button and confirm to remove a task.
-- Choose **Reorder Tasks**, drag tasks using their handles, then choose **Save Order** to persist the new sequence.
-- Finish editing or save the order before starting another task edit or adding a task.
+- Choose **Edit Tasks** to change task names, assign or clear emojis, delete tasks, and drag tasks into order.
+- Choose **Add Task** to insert a blank task inline. Choose **Save Tasks** to save task edits and ordering.
 
 ## Requirements
 

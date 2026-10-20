@@ -4,18 +4,27 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="20dp"
-    android:minHeight="80dp"
+    android:minHeight="88dp"
     android:gravity="center_vertical">
 
-    <ImageButton
-        android:id="@+id/editButton"
+    <TextView
+        android:id="@+id/taskBullet"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@android:drawable/ic_menu_edit"
-        android:contentDescription="Edit task"
-        android:scaleType="centerInside"
-        android:background="?attr/selectableItemBackground"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:text="&#8226;"
+        android:textSize="24sp"
+        android:contentDescription="Task" />
+
+    <TextView
+        android:id="@+id/taskEmoji"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:visibility="gone" />
 
     <ImageButton
         android:id="@+id/dragHandle"
@@ -26,7 +35,17 @@
         android:scaleType="centerInside"
         android:tint="?attr/colorControlNormal"
         android:background="?attr/selectableItemBackground"
-        android:layout_marginEnd="16dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/emojiPickerButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/choose_task_emoji"
+        android:gravity="center"
+        android:textSize="22sp"
         android:visibility="gone" />
 
     <TextView
@@ -35,7 +54,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:ellipsize="end" />
 
     <EditText
         android:id="@+id/taskNameEdit"
@@ -48,44 +69,17 @@
         android:textSize="18sp"
         android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/taskEditActions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <ImageButton
-            android:id="@+id/saveTaskButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_check"
-            android:contentDescription="@string/save_task"
-            android:padding="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="@color/action_save" />
-
-        <ImageButton
-            android:id="@+id/deleteTaskButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_delete"
-            android:contentDescription="@string/delete_task"
-            android:padding="12dp"
-            android:scaleType="centerInside"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="@color/action_cancel" />
-
-        <ImageButton
-            android:id="@+id/cancelTaskEditButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_close"
-            android:contentDescription="@string/cancel_task_edit"
-            android:padding="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="@color/action_cancel" />
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/deleteTaskButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:contentDescription="@string/delete_task"
+        android:padding="12dp"
+        android:scaleType="centerInside"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:tint="@color/action_cancel"
+        android:visibility="gone" />
 
     <Switch
         android:id="@+id/completeToggle"
