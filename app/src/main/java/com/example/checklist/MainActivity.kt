@@ -56,6 +56,51 @@ class MainActivity : AppCompatActivity() {
     private lateinit var emptyRoutineState: android.view.View
     private var selectedRoutineId: String? = null
     private var pendingRoutineTaskId: String? = null
+    private val exportTasksLauncher = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri == null) return@registerForActivityResult
+        try {
+            val output = contentResolver.openOutputStream(uri) ?: error("Unable to open file")
+            output.use { it.write(taskManager.exportBackupJson().toByteArray(Charsets.UTF_8)) }
+            Toast.makeText(this, R.string.tasks_exported, Toast.LENGTH_SHORT).show()
+        } catch (_: Exception) {
+            Toast.makeText(this, R.string.tasks_export_failed, Toast.LENGTH_LONG).show()
+        }
+    }
+    private val importTasksLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) return@registerForActivityResult
+        try {
+            val input = contentResolver.openInputStream(uri) ?: error("Unable to open file")
+            val json = input.bufferedReader(Charsets.UTF_8).use { it.readText() }
+            val backup = taskManager.parseBackupJson(json)
+            AlertDialog.Builder(this)
+                .setTitle(R.string.restore_tasks_title)
+                .setMessage(
+                    getString(
+                        R.string.restore_tasks_confirmation,
+                        backup.tasks.size,
+                        backup.routines.size
+                    )
+                )
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.restore_tasks) { _, _ ->
+                    taskManager.replaceWithBackup(backup)
+                    refreshRoutineSpinner()
+                    loadTasks()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.tasks_restored, backup.tasks.size, backup.routines.size),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .show()
+        } catch (_: Exception) {
+            Toast.makeText(this, R.string.tasks_import_failed, Toast.LENGTH_LONG).show()
+        }
+    }
     private val addRoutineLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -139,6 +184,8 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, R.string.task_name_required, Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
+                getSystemService(android.view.inputmethod.InputMethodManager::class.java)
+                    ?.hideSoftInputFromWindow(editTasksButton.windowToken, 0)
                 routineSpinner.isEnabled = true
                 updateEditTasksButton(false)
             } else {
@@ -414,11 +461,27 @@ class MainActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.help_dialog_title)
             .setMessage(message)
+            .setNeutralButton(R.string.task_backup) { _, _ -> showTaskBackupOptions() }
             .setPositiveButton(android.R.string.ok, null)
             .create()
 
         dialog.show()
         dialog.findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
+    }
+
+    private fun showTaskBackupOptions() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.task_backup)
+            .setItems(R.array.task_backup_options) { _, selection ->
+                if (adapter.isEditMode) {
+                    Toast.makeText(this, R.string.save_task_edits_before_backup, Toast.LENGTH_SHORT).show()
+                } else if (selection == 0) {
+                    exportTasksLauncher.launch("checklist-backup.json")
+                } else {
+                    importTasksLauncher.launch(arrayOf("application/json"))
+                }
+            }
+            .show()
     }
 }
 
