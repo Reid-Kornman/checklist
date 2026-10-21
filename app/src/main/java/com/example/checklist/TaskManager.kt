@@ -12,29 +12,62 @@ class TaskManager(context: Context) {
 
     fun getTasks(): List<Task> {
         val jsonString = sharedPreferences.getString(tasksKey, null)
-        return if (jsonString != null) {
-            val jsonArray = JSONArray(jsonString)
-            val tasks = mutableListOf<Task>()
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.getJSONObject(i)
-                tasks.add(Task(
-                    id = obj.optString("id", java.util.UUID.randomUUID().toString()),
-                    name = obj.getString("name"),
-                    order = obj.getInt("order"),
-                    startTime = obj.getString("startTime"),
-                    endTime = obj.getString("endTime"),
-                    routineId = obj.optString("routineId", ""),
-                    completed = obj.optBoolean("completed", false),
-                    emoji = obj.optString("emoji", "")
-                ))
-            }
-            tasks
-        } else {
-            emptyList()
+        return jsonString?.let(::parseTasksJson) ?: emptyList()
+    }
+
+    fun exportBackupJson(): String = JSONObject()
+        .put("formatVersion", 1)
+        .put("tasks", taskListToJson(getTasks()))
+        .put("routines", routineListToJson(getRoutines()))
+        .toString()
+
+    fun parseTasksJson(json: String): List<Task> {
+        return parseTasksArray(JSONArray(json))
+    }
+
+    fun parseBackupJson(json: String): TaskBackup {
+        val backup = JSONObject(json)
+        require(backup.getInt("formatVersion") == 1) { "Unsupported backup version" }
+        return TaskBackup(
+            tasks = parseTasksArray(backup.getJSONArray("tasks")),
+            routines = parseRoutinesArray(backup.getJSONArray("routines"))
+        )
+    }
+
+    fun replaceWithBackup(backup: TaskBackup) {
+        sharedPreferences.edit()
+            .putString(tasksKey, taskListToJson(backup.tasks).toString())
+            .putString(routinesKey, routineListToJson(backup.routines).toString())
+            .apply()
+    }
+
+    private fun parseTasksArray(jsonArray: JSONArray): List<Task> {
+        val tasks = mutableListOf<Task>()
+        val taskIds = mutableSetOf<String>()
+        for (i in 0 until jsonArray.length()) {
+            val obj = jsonArray.getJSONObject(i)
+            val task = Task(
+                id = obj.optString("id", java.util.UUID.randomUUID().toString()),
+                name = obj.getString("name"),
+                order = obj.getInt("order"),
+                startTime = obj.getString("startTime"),
+                endTime = obj.getString("endTime"),
+                routineId = obj.optString("routineId", ""),
+                completed = obj.optBoolean("completed", false),
+                emoji = obj.optString("emoji", "")
+            )
+            require(task.id.isNotBlank()) { "Task IDs cannot be empty" }
+            require(taskIds.add(task.id)) { "Task IDs must be unique" }
+            tasks.add(task)
         }
+        return tasks
     }
 
     fun saveTasks(tasks: List<Task>) {
+        sharedPreferences.edit().putString(tasksKey, taskListToJson(tasks).toString()).apply()
+    }
+
+    private fun taskListToJson(tasks: List<Task>): JSONArray {
         val jsonArray = JSONArray()
         for (task in tasks) {
             val obj = JSONObject()
@@ -48,7 +81,7 @@ class TaskManager(context: Context) {
             obj.put("emoji", task.emoji)
             jsonArray.put(obj)
         }
-        sharedPreferences.edit().putString(tasksKey, jsonArray.toString()).apply()
+        return jsonArray
     }
 
     fun saveTask(task: Task) {
@@ -92,24 +125,35 @@ class TaskManager(context: Context) {
     fun getRoutines(): List<Routine> {
         val jsonString = sharedPreferences.getString(routinesKey, null)
         return if (jsonString != null) {
-            val jsonArray = JSONArray(jsonString)
-            val routines = mutableListOf<Routine>()
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.getJSONObject(i)
-                routines.add(Routine(
-                    id = obj.optString("id", java.util.UUID.randomUUID().toString()),
-                    name = obj.getString("name"),
-                    startTime = obj.getString("startTime"),
-                    endTime = obj.getString("endTime")
-                ))
-            }
-            routines
+            parseRoutinesArray(JSONArray(jsonString))
         } else {
             emptyList()
         }
     }
 
     fun saveRoutines(routines: List<Routine>) {
+        sharedPreferences.edit().putString(routinesKey, routineListToJson(routines).toString()).apply()
+    }
+
+    private fun parseRoutinesArray(jsonArray: JSONArray): List<Routine> {
+        val routines = mutableListOf<Routine>()
+        val routineIds = mutableSetOf<String>()
+        for (i in 0 until jsonArray.length()) {
+            val obj = jsonArray.getJSONObject(i)
+            val routine = Routine(
+                id = obj.optString("id", java.util.UUID.randomUUID().toString()),
+                name = obj.getString("name"),
+                startTime = obj.getString("startTime"),
+                endTime = obj.getString("endTime")
+            )
+            require(routine.id.isNotBlank()) { "Routine IDs cannot be empty" }
+            require(routineIds.add(routine.id)) { "Routine IDs must be unique" }
+            routines.add(routine)
+        }
+        return routines
+    }
+
+    private fun routineListToJson(routines: List<Routine>): JSONArray {
         val jsonArray = JSONArray()
         for (routine in routines) {
             val obj = JSONObject()
@@ -119,7 +163,7 @@ class TaskManager(context: Context) {
             obj.put("endTime", routine.endTime)
             jsonArray.put(obj)
         }
-        sharedPreferences.edit().putString(routinesKey, jsonArray.toString()).apply()
+        return jsonArray
     }
 
     fun saveRoutine(routine: Routine) {
@@ -143,3 +187,5 @@ class TaskManager(context: Context) {
         saveTasks(tasks)
     }
 }
+
+data class TaskBackup(val tasks: List<Task>, val routines: List<Routine>)

@@ -53,4 +53,27 @@ class TaskManagerInstrumentedTest {
         assertTrue(aTasks[1].completed)  // A2 was already checked
         assertFalse(bTasks[0].completed) // B1 remains unchecked
     }
+
+    @Test
+    fun backupJsonRoundTripsTasksAndRoutines() {
+        val tasks = listOf(
+            Task("task-a", "Morning task", 2, "08:00", "09:00", "routine-a", true, "🌱"),
+            Task("task-b", "Evening task", 1, "18:00", "19:00", "routine-b")
+        )
+        val routines = listOf(
+            Routine("routine-a", "Morning", "08:00", "12:00"),
+            Routine("routine-b", "Evening", "18:00", "22:00")
+        )
+        taskManager.saveTasks(tasks)
+        taskManager.saveRoutines(routines)
+
+        val backup = taskManager.parseBackupJson(taskManager.exportBackupJson())
+
+        assertEquals(tasks, backup.tasks)
+        assertEquals(routines, backup.routines)
+
+        taskManager.replaceWithBackup(backup)
+        assertEquals(tasks, taskManager.getTasks())
+        assertEquals(routines, taskManager.getRoutines())
+    }
 }

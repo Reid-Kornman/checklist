@@ -9,6 +9,7 @@ A native Android checklist for organizing tasks into routines.
 - Mark tasks complete and reset completion status.
 - Switch between light and dark mode; the selection is saved between launches.
 - Store routines and tasks locally on the device.
+- Export and restore tasks and routines as a JSON backup from the About menu.
 
 The task list shows the selected routine's tasks in their configured order. Routine times are displayed but do not automatically filter tasks by the current time.
 
@@ -62,4 +63,4 @@ You can also open the project in Android Studio, sync Gradle, and run the `app` 
 
 ## Data
 
-Create and manage routines and tasks in the app. They are saved locally using Android SharedPreferences; there is no `tasks.json` configuration file.
+Create and manage routines and tasks in the app. They are saved locally using Android SharedPreferences. Use **About > Backup and restore** to export a JSON backup to local storage or restore one later.

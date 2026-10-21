@@ -24,6 +24,17 @@
     <string name="dark_mode_switch_to_dark">Switch to dark mode</string>
     <string name="dark_mode_switch_to_light">Switch to light mode</string>
     <string name="help_dialog_title">About</string>
+    <string name="task_backup">Backup and restore</string>
+    <string name="export_tasks">Export backup</string>
+    <string name="import_tasks">Import backup</string>
+    <string name="restore_tasks_title">Restore backup?</string>
+    <string name="restore_tasks_confirmation">Replace all current tasks and routines with %1$d tasks and %2$d routines from this file?</string>
+    <string name="restore_tasks">Restore backup</string>
+    <string name="tasks_exported">Tasks exported</string>
+    <string name="tasks_export_failed">Could not save the task backup.</string>
+    <string name="tasks_import_failed">This file is not a valid task backup.</string>
+    <string name="tasks_restored">Restored %1$d tasks and %2$d routines</string>
+    <string name="save_task_edits_before_backup">Save task edits before backing up or restoring.</string>
     <string name="support_email">reid.kornman@gmail.com</string>
     <string name="donation_url">https://paypal.me/ReidKornman</string>
     <string name="help_dialog_html"><![CDATA[
@@ -32,4 +43,8 @@ Version: %2$s<br/>
 Email: %3$s<br/>
 Donate: <a href="%4$s">%4$s</a>
     ]]></string>
+    <string-array name="task_backup_options">
+        <item>@string/export_tasks</item>
+        <item>@string/import_tasks</item>
+    </string-array>
 </resources>
