@@ -13,7 +13,9 @@ import android.view.Gravity
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.GridLayout
+import android.widget.LinearLayout
 import android.widget.PopupWindow
+import android.widget.ScrollView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -717,23 +719,119 @@ class TaskAdapter(
 
         private fun showEmojiPicker(anchor: android.view.View, taskId: String) {
             val context = itemView.context
-            val emojis = listOf(
-                "🧹", "🧺", "🧼", "🛏️", "🪥", "🚿", "🍽️", "🥣",
-                "🍎", "💧", "🧘", "🏃", "📚", "✍️", "💻", "📞",
-                "🛒", "💊", "🐕", "🌱", "🚗", "💰", "📦", "🎵", "⭐", "❤️"
+            val categories = listOf(
+                R.string.emoji_category_home to listOf(
+                    "🧹", "🧺", "🧼", "🛏️", "🪥", "🚿", "🛁", "🧽",
+                    "🧴", "🪟", "🧻", "🧯", "🪴", "🧷", "🧹", "🧹",
+                    "🧦", "👕", "👗", "🧥", "🪣", "🧹", "🧺", "🪠",
+                    "🛋️", "🪑", "🛁", "🪞", "🧸", "🕯️", "🪜", "🧰"
+                ),
+                R.string.emoji_category_food to listOf(
+                    "🍽️", "🥣", "🍎", "🍌", "🥑", "🥪", "🥗", "🍳",
+                    "🥛", "☕", "🍵", "🧃", "🍞", "🍕", "🍲", "🍪",
+                    "🍊", "🍓", "🫐", "🍇", "🍉", "🥕", "🥦", "🌽",
+                    "🍚", "🍜", "🌮", "🥘", "🧁", "🍫", "🥤", "🍼"
+                ),
+                R.string.emoji_category_health to listOf(
+                    "💧", "🧘", "🏃", "💊", "🩺", "🩹", "🚴", "🏋️",
+                    "🧠", "😴", "🛌", "🧘‍♀️", "🧘‍♂️", "🦷", "🧴", "❤️",
+                    "🧑‍⚕️", "🩻", "🌡️", "🧪", "🩼", "🦵", "💪", "🫀",
+                    "🚶", "🤸", "🏃‍♀️", "🏃‍♂️", "🥗", "🍎", "🧘", "🛀"
+                ),
+                R.string.emoji_category_work to listOf(
+                    "📚", "✍️", "💻", "📞", "📝", "📖", "📓", "📅",
+                    "📧", "🖥️", "⌨️", "🖨️", "📊", "🎓", "🗂️", "📌",
+                    "📒", "📔", "📕", "📗", "📘", "📙", "🗒️", "📇",
+                    "🖊️", "🖋️", "✏️", "📐", "📏", "🧮", "📈", "📉",
+                    "🗓️", "🧑‍💻", "🗃️", "📂", "📎", "🖇️", "🔍", "💼"
+                ),
+                R.string.emoji_category_errands to listOf(
+                    "🛒", "💰", "📦", "🏦", "📮", "🧾", "🛍️", "🔑",
+                    "🧺", "🏪", "🚚", "🧹", "🛠️", "📬", "💳", "🗑️",
+                    "🏧", "🪙", "💵", "💸", "🧮", "🪪", "🛃", "🛂",
+                    "🧰", "🔧", "🔨", "🪛", "🪜", "📫", "🧹", "🧼",
+                    "🏣", "🏤", "🛒", "🛍️", "🧾", "📋", "🔋", "🪫"
+                ),
+                R.string.emoji_category_travel to listOf(
+                    "🚗", "🚲", "🚌", "🚆", "✈️", "🚕", "⛽", "🗺️",
+                    "🧳", "🚦", "🚶", "🏠", "🚇", "🛴", "🚢", "🛣️",
+                    "🚙", "🚐", "🚎", "🚃", "🚄", "🚅", "🚉", "🚏",
+                    "🚁", "🛩️", "🛫", "🛬", "🛥️", "⛴️", "🚤", "🛶",
+                    "🛞", "🅿️", "🧭", "🏕️", "🏨", "🛎️", "🎫", "🛂"
+                ),
+                R.string.emoji_category_nature to listOf(
+                    "🐕", "🐈", "🌱", "🌿", "🌷", "🌻", "🌳", "🌼",
+                    "🐾", "🐈‍⬛", "🐦", "🐠", "☀️", "🌧️", "🌈", "🌎",
+                    "🐶", "🐱", "🐰", "🐹", "🐢", "🐟", "🐬", "🦋",
+                    "🌵", "🌴", "🍀", "🌺", "🌹", "🍁", "🍂", "🌲",
+                    "🌤️", "⛅", "🌩️", "❄️", "🌊", "🌙", "⭐", "🌍"
+                ),
+                R.string.emoji_category_activities to listOf(
+                    "🎵", "⭐", "🎨", "🎸", "🎮", "⚽", "🏀", "🏊",
+                    "🎬", "📷", "🧩", "🎤", "🎹", "🏕️", "🎾", "🪁",
+                    "🎧", "🎼", "🥁", "🎻", "🎷", "🎺", "🪇", "🎭",
+                    "🎟️", "🎲", "♟️", "🃏", "🪄", "🛼", "🏸", "🏓",
+                    "🏐", "🏈", "⚾", "🥎", "🥊", "🧗", "🏄", "🎣"
+                ),
+                R.string.emoji_category_symbols to listOf(
+                    "❤️", "✅", "❌", "❗", "❓", "💡", "🔔", "⏰",
+                    "📍", "🔒", "♻️", "➕", "➖", "💤", "✨", "🔥",
+                    "💯", "⭐", "🌟", "💫", "⚠️", "🚫", "⛔", "🔴",
+                    "🟠", "🟡", "🟢", "🔵", "🟣", "⚫", "⚪", "🟤",
+                    "🔓", "🔑", "🔕", "📣", "🏁", "🎯", "➰", "💬"
+                )
             )
-            val columns = 4
+            val categoryIcons = listOf("🏠", "🍽️", "💊", "📚", "🛒", "🚗", "🌿", "🎨", "✅")
             val density = context.resources.displayMetrics.density
             val cellSize = (48 * density).toInt()
             val padding = (4 * density).toInt()
+            val popupWidth = taskNameEdit.width.takeIf { it > 0 } ?: anchor.width
+            val columns = ((popupWidth - padding * 2) / cellSize).coerceAtLeast(1)
             val grid = GridLayout(context).apply {
                 columnCount = columns
                 setPadding(padding, padding, padding, padding)
             }
+            val categoryTabs = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+            }
+            val gridScroll = ScrollView(context).apply {
+                isFillViewport = true
+                addView(grid)
+            }
+            val content = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                addView(
+                    categoryTabs,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        (48 * density).toInt()
+                    )
+                )
+                addView(
+                    android.view.View(context).apply {
+                        setBackgroundColor(context.getColor(R.color.emoji_picker_divider))
+                    },
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        (1 * density).toInt()
+                    ).apply {
+                        topMargin = (4 * density).toInt()
+                        bottomMargin = (4 * density).toInt()
+                    }
+                )
+                addView(
+                    gridScroll,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        0,
+                        1f
+                    )
+                )
+            }
             val popup = PopupWindow(
-                grid,
-                cellSize * columns + padding * 2,
-                cellSize * ((emojis.size + 1 + columns - 1) / columns) + padding * 2,
+                content,
+                popupWidth,
+                (260 * density).toInt(),
                 true
             ).apply {
                 setBackgroundDrawable(ColorDrawable(context.getColor(R.color.task_row_odd)))
@@ -741,7 +839,7 @@ class TaskAdapter(
                 isOutsideTouchable = true
             }
 
-            (listOf("") + emojis).forEachIndexed { index, emoji ->
+            fun addEmojiOption(index: Int, emoji: String) {
                 val option = TextView(context).apply {
                     text = emoji.ifEmpty { "×" }
                     textSize = 24f
@@ -767,6 +865,41 @@ class TaskAdapter(
                 grid.addView(option, params)
             }
 
+            fun showCategory(categoryIndex: Int) {
+                categoryTabs.removeAllViews()
+                categories.forEachIndexed { index, category ->
+                    val categoryName = context.getString(category.first)
+                    val tab = TextView(context).apply {
+                        text = categoryIcons[index]
+                        textSize = 20f
+                        gravity = Gravity.CENTER
+                        contentDescription = categoryName
+                        tooltipText = categoryName
+                        setBackgroundResource(android.R.drawable.list_selector_background)
+                        isSelected = index == categoryIndex
+                        alpha = if (isSelected) 1f else 0.65f
+                        if (isSelected) {
+                            paintFlags = paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
+                        }
+                        setOnClickListener { showCategory(index) }
+                    }
+                    categoryTabs.addView(
+                        tab,
+                        LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            1f
+                        )
+                    )
+                }
+
+                grid.removeAllViews()
+                val emojis = listOf("") + categories[categoryIndex].second.distinct()
+                emojis.forEachIndexed(::addEmojiOption)
+                gridScroll.scrollTo(0, 0)
+            }
+
+            showCategory(0)
             popup.showAsDropDown(anchor, anchor.width, -anchor.height)
         }
     }

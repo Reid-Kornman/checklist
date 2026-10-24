@@ -26,7 +26,7 @@ The task list shows the selected routine's tasks in their configured order. Rout
 ## Task Workflow
 
 - Select a routine from the list at the top of the screen.
-- Choose **Edit Tasks** to change task names, assign or clear emojis, delete tasks, and drag tasks into order.
+- Choose **Edit Tasks** to change task names, assign or clear emojis from categorized groups, delete tasks, and drag tasks into order.
 - Choose **Add Task** to insert a blank task inline. Choose **Save Tasks** to save task edits and ordering.
 
 ## Requirements

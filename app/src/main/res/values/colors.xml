@@ -5,4 +5,5 @@
     <color name="action_edit">#F9A825</color>
     <color name="action_save">#2E7D32</color>
     <color name="action_cancel">#D32F2F</color>
+    <color name="emoji_picker_divider">#616161</color>
 </resources>

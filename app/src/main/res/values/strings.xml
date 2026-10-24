@@ -20,6 +20,15 @@
     <string name="choose_task_emoji">Choose task emoji</string>
     <string name="clear_task_emoji">Clear task emoji</string>
     <string name="task_emoji_option">Assign %1$s emoji</string>
+    <string name="emoji_category_home">Home</string>
+    <string name="emoji_category_food">Food</string>
+    <string name="emoji_category_health">Health</string>
+    <string name="emoji_category_work">Work &amp; study</string>
+    <string name="emoji_category_errands">Errands</string>
+    <string name="emoji_category_travel">Travel</string>
+    <string name="emoji_category_nature">Nature</string>
+    <string name="emoji_category_activities">Activities</string>
+    <string name="emoji_category_symbols">Symbols</string>
     <string name="help_icon_description">Help</string>
     <string name="dark_mode_switch_to_dark">Switch to dark mode</string>
     <string name="dark_mode_switch_to_light">Switch to light mode</string>
