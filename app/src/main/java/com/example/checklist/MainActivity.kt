@@ -693,6 +693,9 @@ class TaskAdapter(
             completeToggle.setOnCheckedChangeListener(null)
             completeToggle.isChecked = task.completed
             completeToggle.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    completeToggle.performHapticFeedback(android.view.HapticFeedbackConstants.CONFIRM)
+                }
                 val updatedTask = task.copy(completed = isChecked)
                 taskManager.saveTask(updatedTask)
 
