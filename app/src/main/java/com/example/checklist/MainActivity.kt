@@ -191,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                 routineSpinner.isEnabled = true
                 updateEditTasksButton(false)
             } else {
-                adapter.beginEditing()
+                startEditing()
                 routineSpinner.isEnabled = false
                 updateEditTasksButton(true)
             }
@@ -372,7 +372,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun addTaskForSelectedRoutine() {
         if (!adapter.isEditMode) {
-            adapter.beginEditing()
+            startEditing()
             routineSpinner.isEnabled = false
             updateEditTasksButton(true)
         }
@@ -395,13 +395,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun startEditing() {
+        adapter.beginEditing()
+        loadTasks()
+    }
+
     private fun loadTasks() {
         val routineId = selectedRoutineId
         if (routineId == null) {
             adapter.updateTasks(emptyList())
             return
         }
-        val tasksForRoutine = taskManager.getTasks().filter { it.routineId == routineId }.sortedBy { it.order }
+        val today = LocalDate.now().dayOfWeek
+        val tasksForRoutine = taskManager.getTasks()
+            .filter { it.routineId == routineId && (adapter.isEditMode || it.isScheduledOn(today)) }
+            .sortedBy { it.order }
         adapter.updateTasks(tasksForRoutine)
     }
 
@@ -495,8 +503,13 @@ data class Task(
     val endTime: String,
     val routineId: String,
     val completed: Boolean = false,
-    val emoji: String = ""
+    val emoji: String = "",
+    val daysOfWeek: Set<Int> = ALL_DAYS_OF_WEEK
 )
+
+// ISO day numbers: 1 = Monday ... 7 = Sunday
+val ALL_DAYS_OF_WEEK: Set<Int> = (1..7).toSet()
+private val DAY_ABBREVIATIONS = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
 data class Routine(
     val id: String,
@@ -514,15 +527,20 @@ class TaskAdapter(
 
     private val tasks = mutableListOf<Task>()
     private val editedNames = mutableMapOf<String, String>()
+    private val editedDays = mutableMapOf<String, Set<Int>>()
     var isEditMode = false
         private set
 
     fun updateTasks(newTasks: List<Task>) {
         editedNames.keys.retainAll(newTasks.mapTo(mutableSetOf()) { it.id })
+        editedDays.keys.retainAll(newTasks.mapTo(mutableSetOf()) { it.id })
         tasks.clear()
         tasks.addAll(newTasks)
         if (isEditMode) {
-            tasks.forEach { task -> editedNames.putIfAbsent(task.id, task.name) }
+            tasks.forEach { task ->
+                editedNames.putIfAbsent(task.id, task.name)
+                editedDays.putIfAbsent(task.id, task.daysOfWeek)
+            }
         }
         notifyDataSetChanged()
         onTaskListChanged()
@@ -545,7 +563,10 @@ class TaskAdapter(
     fun beginEditing() {
         if (isEditMode) return
         isEditMode = true
-        tasks.forEach { editedNames[it.id] = it.name }
+        tasks.forEach {
+            editedNames[it.id] = it.name
+            editedDays[it.id] = it.daysOfWeek
+        }
         notifyDataSetChanged()
     }
 
@@ -554,6 +575,7 @@ class TaskAdapter(
         val position = tasks.size
         tasks.add(task)
         editedNames[task.id] = ""
+        editedDays[task.id] = task.daysOfWeek
         notifyItemInserted(position)
         onTaskListChanged()
         return true
@@ -563,20 +585,27 @@ class TaskAdapter(
         if (isEditMode && taskId in editedNames) editedNames[taskId] = draft
     }
 
+    fun updateEditingDays(taskId: String, days: Set<Int>) {
+        if (isEditMode && taskId in editedDays) editedDays[taskId] = days
+    }
+
     fun saveChanges(): Boolean {
         val updatedTasks = tasks.mapIndexed { index, task ->
             val name = editedNames[task.id]?.trim().orEmpty()
             if (name.isEmpty()) return false
-            task.copy(name = name, order = index)
+            task.copy(name = name, order = index, daysOfWeek = editedDays[task.id] ?: task.daysOfWeek)
         }
         val updatedTasksById = updatedTasks.associateBy { it.id }
         val allTasks = taskManager.getTasks().map { task -> updatedTasksById[task.id] ?: task }
         taskManager.saveTasks(allTasks + updatedTasks.filter { updated -> allTasks.none { it.id == updated.id } })
+        val today = LocalDate.now().dayOfWeek
         tasks.clear()
-        tasks.addAll(updatedTasks)
+        tasks.addAll(updatedTasks.filter { it.isScheduledOn(today) })
         editedNames.clear()
+        editedDays.clear()
         isEditMode = false
         notifyDataSetChanged()
+        onTaskListChanged()
         return true
     }
 
@@ -584,6 +613,7 @@ class TaskAdapter(
         val position = tasks.indexOfFirst { it.id == taskId }
         taskManager.deleteTask(taskId)
         editedNames.remove(taskId)
+        editedDays.remove(taskId)
         if (position >= 0) {
             tasks.removeAt(position)
             notifyItemRemoved(position)
@@ -608,7 +638,7 @@ class TaskAdapter(
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
-        holder.bind(task, position, isEditMode, editedNames[task.id].orEmpty())
+        holder.bind(task, position, isEditMode, editedNames[task.id].orEmpty(), editedDays[task.id] ?: task.daysOfWeek)
     }
 
     override fun getItemCount() = tasks.size
@@ -629,9 +659,56 @@ class TaskAdapter(
         private val completeToggle: android.widget.Switch = itemView.findViewById(R.id.completeToggle)
         private val deleteButton: android.widget.ImageButton = itemView.findViewById(R.id.deleteTaskButton)
         private val rootLayout: android.view.View = itemView
+        private val taskDays: android.widget.TextView = itemView.findViewById(R.id.taskDays)
+        private val dayPicker: LinearLayout = itemView.findViewById(R.id.dayPicker)
+        private val dayButtons = DAY_ABBREVIATIONS.map { android.widget.TextView(itemView.context) }
         private var draftWatcher: TextWatcher? = null
 
-        fun bind(task: Task, position: Int, isEditMode: Boolean, editDraft: String) {
+        init {
+            val density = itemView.resources.displayMetrics.density
+            dayButtons.forEachIndexed { index, button ->
+                button.text = DAY_ABBREVIATIONS[index]
+                button.gravity = Gravity.CENTER
+                button.textSize = 11f
+                dayPicker.addView(button, LinearLayout.LayoutParams(0, (36 * density).toInt(), 1f).apply {
+                    marginEnd = (2 * density).toInt()
+                })
+            }
+        }
+
+        private fun styleDayButton(button: android.widget.TextView, selected: Boolean) {
+            val density = itemView.resources.displayMetrics.density
+            button.background = android.graphics.drawable.GradientDrawable().apply {
+                cornerRadius = 8 * density
+                setColor(if (selected) itemView.context.getColor(R.color.action_save) else android.graphics.Color.TRANSPARENT)
+                setStroke((1 * density).toInt(), itemView.context.getColor(R.color.action_save))
+            }
+            button.setTextColor(if (selected) android.graphics.Color.WHITE else button.currentHintTextColor)
+        }
+
+        fun bind(task: Task, position: Int, isEditMode: Boolean, editDraft: String, editDays: Set<Int>) {
+            val daysLabel = DAY_ABBREVIATIONS.filterIndexed { i, _ -> (i + 1) in task.daysOfWeek }
+            taskDays.text = daysLabel.joinToString(" ")
+            taskDays.visibility = if (!isEditMode && task.daysOfWeek != ALL_DAYS_OF_WEEK) {
+                android.view.View.VISIBLE
+            } else {
+                android.view.View.GONE
+            }
+            dayPicker.visibility = if (isEditMode) android.view.View.VISIBLE else android.view.View.GONE
+            if (isEditMode) {
+                var selectedDays = editDays
+                dayButtons.forEachIndexed { index, button ->
+                    val day = index + 1
+                    styleDayButton(button, day in selectedDays)
+                    button.setOnClickListener {
+                        val updated = if (day in selectedDays) selectedDays - day else selectedDays + day
+                        if (updated.isEmpty()) return@setOnClickListener
+                        selectedDays = updated
+                        adapter.updateEditingDays(task.id, updated)
+                        styleDayButton(button, day in updated)
+                    }
+                }
+            }
             taskName.text = task.name
             taskName.visibility = if (isEditMode) android.view.View.GONE else android.view.View.VISIBLE
             taskNameEdit.visibility = if (isEditMode) android.view.View.VISIBLE else android.view.View.GONE

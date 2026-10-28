@@ -1,5 +1,9 @@
 package com.example.checklist
 
+import java.time.DayOfWeek
+
+fun Task.isScheduledOn(dayOfWeek: DayOfWeek): Boolean = dayOfWeek.value in daysOfWeek
+
 fun toAmPm(time24: String): String {
     val parts = time24.split(":")
     if (parts.size != 2) return time24

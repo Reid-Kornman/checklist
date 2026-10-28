@@ -54,7 +54,10 @@ class TaskManager(context: Context) {
                 endTime = obj.getString("endTime"),
                 routineId = obj.optString("routineId", ""),
                 completed = obj.optBoolean("completed", false),
-                emoji = obj.optString("emoji", "")
+                emoji = obj.optString("emoji", ""),
+                daysOfWeek = obj.optJSONArray("days")?.let { days ->
+                    (0 until days.length()).map { days.getInt(it) }.filter { it in 1..7 }.toSet()
+                }?.takeIf { it.isNotEmpty() } ?: ALL_DAYS_OF_WEEK
             )
             require(task.id.isNotBlank()) { "Task IDs cannot be empty" }
             require(taskIds.add(task.id)) { "Task IDs must be unique" }
@@ -79,6 +82,7 @@ class TaskManager(context: Context) {
             obj.put("routineId", task.routineId)
             obj.put("completed", task.completed)
             obj.put("emoji", task.emoji)
+            obj.put("days", JSONArray(task.daysOfWeek.sorted()))
             jsonArray.put(obj)
         }
         return jsonArray

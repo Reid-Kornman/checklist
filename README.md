@@ -6,12 +6,13 @@ A native Android checklist for organizing tasks into routines.
 
 - Create, edit, and delete routines, each with a name and start/end times.
 - Add tasks to the selected routine, then edit names, assign emojis, delete, and reorder tasks in a shared editing mode.
+- Schedule tasks for specific weekdays; the checklist shows tasks scheduled for the current day.
 - Mark tasks complete and reset completion status.
 - Switch between light and dark mode; the selection is saved between launches.
 - Store routines and tasks locally on the device.
 - Export and restore tasks and routines as a JSON backup from the About menu.
 
-The task list shows the selected routine's tasks in their configured order. Routine times are displayed but do not automatically filter tasks by the current time.
+The task list shows the selected routine's tasks for the current weekday in their configured order. Routine times are displayed but do not automatically filter tasks by the current time.
 
 ## Screenshots
 
@@ -26,7 +27,7 @@ The task list shows the selected routine's tasks in their configured order. Rout
 ## Task Workflow
 
 - Select a routine from the list at the top of the screen.
-- Choose **Edit Tasks** to change task names, assign or clear emojis from categorized groups, delete tasks, and drag tasks into order.
+- Choose **Edit Tasks** to change task names, assign weekdays, assign or clear emojis from categorized groups, delete tasks, and drag tasks into order.
 - Choose **Add Task** to insert a blank task inline. Choose **Save Tasks** to save task edits and ordering.
 
 ## Requirements
